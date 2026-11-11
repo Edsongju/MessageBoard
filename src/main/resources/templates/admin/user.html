@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户管理 - 后台管理</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+<!-- 星空背景 -->
+<canvas id="starBg"></canvas>
+
+<div class="navbar">
+    <div class="nav-container">
+        <div class="nav-logo">⚙️ 留言板管理后台</div>
+        <div class="nav-user">
+            <span>管理员：<span th:text="${session.currentUser.username}"></span></span>
+            <a th:href="@{/index}">返回前台</a>
+            <a th:href="@{/logout}">退出</a>
+        </div>
+    </div>
+</div>
+
+<div class="admin-layout">
+    <div class="admin-sidebar">
+        <div class="admin-menu">
+            <a th:href="@{/admin/user}" class="active">👥 用户管理</a>
+            <a th:href="@{/admin/message}">💬 留言管理</a>
+        </div>
+    </div>
+
+    <div class="admin-content">
+        <div class="admin-page-header">
+            <h2>用户管理</h2>
+            <span>共 <span th:text="${#lists.size(list)}"></span> 位用户</span>
+        </div>
+
+        <div class="table-card">
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th width="80">ID</th>
+                    <th width="140">用户名</th>
+                    <th width="120">角色</th>
+                    <th width="180">注册时间</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="u : ${list}">
+                    <td th:text="${u.id}"></td>
+                    <td th:text="${u.username}"></td>
+                    <td>
+                                <span class="role-tag" th:classappend="${u.role == 1 ? 'admin' : 'user'}"
+                                      th:text="${u.role == 1 ? '管理员' : '普通用户'}"></span>
+                    </td>
+                    <td th:text="${u.createTime}"></td>
+                    <td>
+                        <a th:if="${u.role == 0}" th:href="@{/admin/user/setAdmin/{id}(id=${u.id})}"
+                           onclick="return confirm('确认设为管理员？')">设为管理员</a>
+                        <span th:if="${u.role == 1}" style="color:#888;">超级管理员</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/star-bg.js}"></script>
+</body>
+</html>

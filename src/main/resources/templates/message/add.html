@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>发布留言 - 留言论坛</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+</head>
+<body>
+<!-- 星空背景 -->
+<canvas id="starBg"></canvas>
+
+<div class="navbar">
+    <div class="nav-container">
+        <div class="nav-logo">💬 留言论坛</div>
+        <div class="nav-menu">
+            <a th:href="@{/index}">留言广场</a>
+            <a th:href="@{/message/list}">个人中心</a>
+        </div>
+        <div class="nav-user">
+            <a th:href="@{/logout}">退出</a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="main-content">
+        <div class="card">
+            <div class="card-header">
+                <h3>发布新留言</h3>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/message/add}" method="post">
+                    <div class="form-group">
+                        <label>留言内容</label>
+                        <textarea name="content" class="form-control" placeholder="分享你的想法..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">立即发布</button>
+                    <a th:href="@{/index}" class="btn btn-default">返回广场</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="card">
+            <div class="card-header">
+                <h3>发帖提示</h3>
+            </div>
+            <div class="card-body">
+                <p style="font-size: 13px; color: #B0B0B0; line-height: 1.8;">
+                    1. 内容请遵守社区规范<br>
+                    2. 建议发布有价值观点<br>
+                    3. 禁止广告、刷屏和违规内容
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/star-bg.js}"></script>
+</body>
+</html>
