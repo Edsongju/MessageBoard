@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jzs.messageboard.mapper.ReplyMapper">
+
+    <select id="listByMessageId" resultType="com.jzs.messageboard.vo.ReplyVO">
+        SELECT
+            r.id,
+            r.message_id AS messageId,
+            r.user_id AS userId,
+            u.username,
+            r.content,
+            r.create_time AS createTime
+        FROM reply r
+        LEFT JOIN sys_user u ON r.user_id = u.id
+        WHERE r.message_id = #{messageId} AND r.status = 1
+        ORDER BY r.create_time ASC
+    </select>
+
+</mapper>

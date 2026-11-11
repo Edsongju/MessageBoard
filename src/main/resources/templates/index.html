@@ -115,6 +115,29 @@
           </div>
         </div>
         <div class="message-content" th:text="${msg.content}"></div>
+        <!-- 回复列表 -->
+        <div class="reply-list" th:if="${!#lists.isEmpty(replyMap[msg.id])}">
+          <div th:each="reply : ${replyMap[msg.id]}" class="reply-item">
+            <div class="reply-header">
+              <span class="reply-user" th:text="${reply.username != null ? reply.username : '已注销用户'}"></span>
+              <span class="reply-time" th:text="${reply.createTime}"></span>
+              <a th:if="${session.currentUser != null and (session.currentUser.role == 1 or reply.userId == session.currentUser.id)}"
+                 th:href="@{/reply/delete/{id}(id=${reply.id})}"
+                 class="reply-del"
+                 onclick="return confirm('确定删除该回复吗？')">删除</a>
+            </div>
+            <div class="reply-content" th:text="${reply.content}"></div>
+          </div>
+        </div>
+
+        <!-- 回复输入框（登录后可见） -->
+        <div class="reply-box" th:if="${session.currentUser != null}">
+          <form th:action="@{/reply/add}" method="post">
+            <input type="hidden" name="messageId" th:value="${msg.id}">
+            <input type="text" name="content" placeholder="写下你的回复..." required class="reply-input">
+            <button type="submit" class="btn btn-primary reply-btn">回复</button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
