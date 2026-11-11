@@ -9,6 +9,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import java.util.List;
 
 @Controller
@@ -40,9 +42,10 @@ public class AdminController {
 
     // 留言管理列表
     @GetMapping("/message")
-    public String messageList(Model model) {
-        List<MessageVO> list = messageService.listAllWithUsername();
+    public String messageList(@RequestParam(required = false) String keyword, Model model) {
+        List<MessageVO> list = messageService.listAllWithUsername(keyword);
         model.addAttribute("list", list);
+        model.addAttribute("keyword", keyword);
         return "admin/message";
     }
 

@@ -29,4 +29,24 @@
         WHERE m.status = 1 AND m.user_id = #{userId}
         ORDER BY m.is_top DESC, m.create_time DESC
     </select>
+    <select id="listAllWithUsername" resultType="com.jzs.messageboard.vo.MessageVO">
+        SELECT
+        m.id,
+        m.user_id AS userId,
+        u.username,
+        m.content,
+        m.is_top AS isTop,
+        m.create_time AS createTime
+        FROM message m
+        LEFT JOIN sys_user u ON m.user_id = u.id
+        <where>
+            <!-- 关键词不为空时，同时匹配留言内容和用户名 -->
+            <if test="keyword != null and keyword != ''">
+                AND (m.content LIKE CONCAT('%', #{keyword}, '%')
+                OR u.username LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+        <!-- 保留原有排序：置顶优先，按发布时间倒序 -->
+        ORDER BY m.is_top DESC, m.create_time DESC
+    </select>
 </mapper>

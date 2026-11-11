@@ -20,14 +20,14 @@ public class MessageService {
         messageMapper.insert(message);
     }
 
-    // 查询某个用户的所有留言（带用户名）
+    // 查询某个用户的所有留言
     public List<MessageVO> listByUserId(Long userId) {
-        return messageMapper.selectMessageByUserId(userId);
+        return messageMapper.listByUserId(userId);
     }
 
-    // 查询所有留言（带用户名，广场用）
-    public List<MessageVO> listAllWithUsername() {
-        return messageMapper.selectAllMessageWithUsername();
+    // 查询所有留言（支持关键词搜索，传null则查全部）
+    public List<MessageVO> listAllWithUsername(String keyword) {
+        return messageMapper.listAllWithUsername(keyword);
     }
 
     // 根据ID查询留言
@@ -40,8 +40,9 @@ public class MessageService {
         messageMapper.updateById(message);
     }
 
-    // 根据ID删除留言（逻辑删除）
+    // 根据ID删除留言
     public void deleteById(Long id) {
         messageMapper.deleteById(id);
     }
 }
+

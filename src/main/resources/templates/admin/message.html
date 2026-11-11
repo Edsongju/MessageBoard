@@ -35,8 +35,27 @@
       <span>共 <span th:text="${#lists.size(list)}"></span> 条留言</span>
     </div>
 
+    <!-- 搜索框：移入内容区内部，布局正常 -->
+    <div class="search-box admin-search">
+      <form th:action="@{/admin/message}" method="get">
+        <input
+                type="text"
+                name="keyword"
+                placeholder="搜索留言内容或用户名..."
+                th:value="${keyword}"
+        >
+        <button type="submit" class="btn btn-primary">搜索</button>
+      </form>
+    </div>
+
     <div class="table-card">
-      <table class="data-table">
+      <!-- 空数据提示 -->
+      <div th:if="${#lists.isEmpty(list)}" class="empty-tip">
+        <span th:if="${keyword != null and keyword != ''}">未找到匹配的留言</span>
+        <span th:unless="${keyword != null and keyword != ''}">暂无留言数据</span>
+      </div>
+
+      <table class="data-table" th:unless="${#lists.isEmpty(list)}">
         <thead>
         <tr>
           <th width="80">ID</th>

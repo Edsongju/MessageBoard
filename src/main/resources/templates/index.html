@@ -46,10 +46,17 @@
 
     <!-- 搜索框 -->
     <div class="search-box">
-      <input type="text" placeholder="搜索留言内容或用户名..." />
-      <button class="btn btn-primary">搜索</button>
+      <form th:action="@{/}" method="get" style="display: flex; width: 100%; gap: 12px; align-items: center;">
+        <input
+                type="text"
+                name="keyword"
+                placeholder="搜索留言内容或用户名..."
+                th:value="${keyword}"
+                style="flex: 1;"
+        />
+        <button type="submit" class="btn btn-primary">搜索</button>
+      </form>
     </div>
-
     <!-- 发布留言框（加宽加大） -->
     <div class="publish-box" th:if="${session.currentUser != null}">
       <form th:action="@{/message/add}" method="post">
