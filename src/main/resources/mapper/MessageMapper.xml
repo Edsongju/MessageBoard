@@ -33,6 +33,7 @@
     <!-- 广场联表查询：支持关键词搜索 -->
     <select id="listAllWithUsername" resultType="com.jzs.messageboard.vo.MessageVO">
         SELECT
+        m.topic,
         m.id,
         m.user_id AS userId,
         u.username,
@@ -54,6 +55,7 @@
     <!-- 我的留言：按用户ID查询 -->
     <select id="listByUserId" resultType="com.jzs.messageboard.vo.MessageVO">
         SELECT
+        m.topic,
         m.id,
         m.user_id AS userId,
         u.username,

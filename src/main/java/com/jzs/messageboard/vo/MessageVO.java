@@ -9,6 +9,7 @@ public class MessageVO {
     private Long userId;
     private String username;
     private String content;
-    private Integer isTop; // 新增：是否置顶
+    private Integer isTop;
     private LocalDateTime createTime;
+    private String topic;
 }

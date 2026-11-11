@@ -17,4 +17,5 @@ public class Message {
     private Integer isTop;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
+    private String topic;
 }

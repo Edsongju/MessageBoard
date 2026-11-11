@@ -2,202 +2,490 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>留言广场 - 在线留言论坛</title>
+  <title>留言板 - 技术交流社区</title>
   <link rel="stylesheet" th:href="@{/css/common.css}">
+  <!-- Font Awesome 图标库 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
 </head>
 <body>
 <!-- 星空背景画布 -->
 <canvas id="starBg"></canvas>
-
-<!-- 顶部导航 -->
-<div class="navbar">
-  <div class="nav-container">
-    <div class="nav-logo">💬 留言论坛</div>
-    <div class="nav-menu">
-      <a th:href="@{/index}" class="active">留言广场</a>
+<!-- 顶部导航栏 -->
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="logo">
+      <i class="fa fa-comments-o"></i> 留言板
     </div>
 
-    <!-- 未登录状态 -->
-    <div class="nav-user" th:if="${session.currentUser == null}">
-      <a th:href="@{/login}" class="nav-btn">登录</a>
-      <a th:href="@{/register}" class="nav-btn primary">注册</a>
+    <nav class="nav-menu">
+      <ul>
+        <li><a th:href="@{/}" th:classappend="${currentTopic == null and #strings.isEmpty(keyword)} ? 'active' : ''">首页</a></li>
+        <li><a href="#features">功能</a></li>
+        <li><a href="#message-board">留言板</a></li>
+        <li><a href="#about">关于我们</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-auth" th:if="${session.currentUser == null}">
+      <a th:href="@{/login}" class="btn btn-outline">登录</a>
+      <a th:href="@{/register}" class="btn btn-primary">注册</a>
     </div>
 
-    <!-- 登录状态 - 悬浮下拉菜单 -->
-    <div class="nav-user user-dropdown" th:if="${session.currentUser != null}">
-      <div class="user-dropdown-trigger">
-        <div class="user-avatar" th:text="${#strings.substring(session.currentUser.username,0,1)}"></div>
-        <span th:text="${session.currentUser.username}"></span>
-        <span style="font-size:12px; color:#999;">▼</span>
-      </div>
-      <div class="user-dropdown-menu">
-        <a th:href="@{/message/list}">📝 我的留言</a>
-        <a th:href="@{/message/add}">✏️ 发布留言</a>
-        <a th:if="${session.currentUser.role == 1}" th:href="@{/admin/user}">⚙️ 管理后台</a>
-        <a th:href="@{/logout}" style="color:#FF6B5B;">🚪 退出登录</a>
+    <div class="header-user" th:if="${session.currentUser != null}">
+      <div class="user-dropdown">
+        <div class="user-dropdown-trigger">
+          <div class="user-avatar" th:text="${#strings.substring(session.currentUser.username,0,1)}"></div>
+          <span th:text="${session.currentUser.username}"></span>
+          <i class="fa fa-caret-down"></i>
+        </div>
+        <div class="user-dropdown-menu">
+          <a th:href="@{/message/list}"><i class="fa fa-file-text-o"></i> 我的留言</a>
+          <a th:href="@{/message/add}"><i class="fa fa-pencil"></i> 发布留言</a>
+          <a th:if="${session.currentUser.role == 1}" th:href="@{/admin/user}"><i class="fa fa-cog"></i> 管理后台</a>
+          <a th:href="@{/logout}" class="logout-btn"><i class="fa fa-sign-out"></i> 退出登录</a>
+        </div>
       </div>
     </div>
   </div>
+</header>
+
+<!-- 轮播 Banner：只在主体内容宽度内居中 -->
+<section class="banner-swiper">
+  <div class="container swiper-outer">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide active"
+           style="background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=1600&q=80');">
+        <div class="slide-content">
+          <h2>技术交流</h2>
+          <p>欢迎来到机械美学留言板，这里是技术爱好者的聚集地。分享编程经验、硬件知识、机械设计，与同行交流心得，共同成长。</p>
+          <a href="#message-board" class="btn btn-primary">立即参与</a>
+        </div>
+      </div>
+      <div class="swiper-slide"
+           style="background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80');">
+        <div class="slide-content">
+          <h2>硬件改装</h2>
+          <p>机械键盘、外设改装、硬件评测，分享你的动手经验，一起探索极致的手感与性能。</p>
+          <a href="#message-board" class="btn btn-primary">查看分享</a>
+        </div>
+      </div>
+      <div class="swiper-slide"
+           style="background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1600&q=80');">
+        <div class="slide-content">
+          <h2>编程开发</h2>
+          <p>从前端到后端，从算法到架构，记录学习历程，解答技术难题，共同进步。</p>
+          <a href="#message-board" class="btn btn-primary">开始交流</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="swiper-dots">
+      <span class="dot active" data-index="0"></span>
+      <span class="dot" data-index="1"></span>
+      <span class="dot" data-index="2"></span>
+    </div>
+  </div>
+</section>
+
+<div class="container main-container">
+
+  <!-- 功能介绍卡片：改成 3 列 -->
+  <section class="features-section" id="features">
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fa fa-code"></i></div>
+      <h3>技术分享</h3>
+      <p>分享编程技巧、硬件知识、机械设计经验，共同进步。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fa fa-comments"></i></div>
+      <h3>交流互动</h3>
+      <p>与同行讨论技术难题，互相解答疑问，拓展技术视野。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fa fa-tags"></i></div>
+      <h3>话题分类</h3>
+      <p>按技术领域分类，快速找到感兴趣的内容，精准交流。</p>
+    </div>
+  </section>
+
+  <!-- 留言板主体 -->
+  <section class="message-board-section" id="message-board">
+    <div class="section-header">
+      <h2>热门留言</h2>
+      <a th:if="${session.currentUser != null}" th:href="@{/message/add}" class="btn btn-primary">发布留言</a>
+      <a th:if="${session.currentUser == null}" th:href="@{/login}" class="btn btn-primary">登录发言</a>
+    </div>
+
+    <div class="topic-filter">
+      <a th:href="@{/(keyword=${keyword})}" class="topic-btn" th:classappend="${currentTopic == null} ? 'active' : ''">全部</a>
+      <a th:href="@{/(topic='编程技术', keyword=${keyword})}" class="topic-btn" th:classappend="${currentTopic == '编程技术'} ? 'active' : ''">编程技术</a>
+      <a th:href="@{/(topic='硬件改装', keyword=${keyword})}" class="topic-btn" th:classappend="${currentTopic == '硬件改装'} ? 'active' : ''">硬件改装</a>
+      <a th:href="@{/(topic='机械设计', keyword=${keyword})}" class="topic-btn" th:classappend="${currentTopic == '机械设计'} ? 'active' : ''">机械设计</a>
+      <a th:href="@{/(topic='其他', keyword=${keyword})}" class="topic-btn" th:classappend="${currentTopic == '其他'} ? 'active' : ''">其他</a>
+    </div>
+
+    <div class="search-box">
+      <form th:action="@{/}" method="get">
+        <input type="hidden" name="topic" th:value="${currentTopic}">
+        <input type="text" name="keyword" placeholder="搜索留言内容或用户名..." th:value="${keyword}">
+        <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> 搜索</button>
+      </form>
+    </div>
+
+    <!-- 留言列表：改成 3 列网格 -->
+    <div class="messages-list">
+      <div th:if="${#lists.isEmpty(messageList)}" class="empty-tip">
+        暂无相关留言
+      </div>
+
+      <div th:each="msg : ${messageList}" class="message-card" th:classappend="${msg.isTop == 1} ? 'is-top' : ''">
+        <div class="message-header">
+          <div class="message-author">
+            <div class="message-avatar" th:text="${#strings.substring(msg.username != null ? msg.username : '游',0,1)}"></div>
+            <div>
+              <div class="author-name" th:text="${msg.username != null ? msg.username : '已注销用户'}"></div>
+              <div class="message-meta">
+                <span class="message-time" th:text="${msg.createTime}"></span>
+                <span class="topic-tag" th:text="${msg.topic != null ? msg.topic : '其他'}"></span>
+              </div>
+            </div>
+          </div>
+          <span th:if="${msg.isTop == 1}" class="top-badge"><i class="fa fa-thumb-tack"></i> 置顶</span>
+        </div>
+        <div class="message-content" th:text="${msg.content}"></div>
+      </div>
+    </div>
+  </section>
+
 </div>
 
-<!-- 主体内容 -->
-<div class="container">
-  <div class="main-content">
+
+
+<!-- 顶部导航栏 -->
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="logo">
+      <i class="fa fa-comments-o"></i> 留言板
+    </div>
+
+    <nav class="nav-menu">
+      <ul>
+        <li><a th:href="@{/}" th:classappend="${currentTopic == null and #strings.isEmpty(keyword)} ? 'active' : ''">首页</a></li>
+        <li><a href="#features">功能</a></li>
+        <li><a href="#message-board">留言板</a></li>
+        <li><a href="#about">关于我们</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-auth" th:if="${session.currentUser == null}">
+      <a th:href="@{/login}" class="btn btn-outline">登录</a>
+      <a th:href="@{/register}" class="btn btn-primary">注册</a>
+    </div>
+
+    <div class="header-user" th:if="${session.currentUser != null}">
+      <div class="user-dropdown">
+        <div class="user-dropdown-trigger">
+          <div class="user-avatar" th:text="${#strings.substring(session.currentUser.username,0,1)}"></div>
+          <span th:text="${session.currentUser.username}"></span>
+          <i class="fa fa-caret-down"></i>
+        </div>
+        <div class="user-dropdown-menu">
+          <a th:href="@{/message/list}"><i class="fa fa-file-text-o"></i> 我的留言</a>
+          <a th:href="@{/message/add}"><i class="fa fa-pencil"></i> 发布留言</a>
+          <a th:if="${session.currentUser.role == 1}" th:href="@{/admin/user}"><i class="fa fa-cog"></i> 管理后台</a>
+          <a th:href="@{/logout}" class="logout-btn"><i class="fa fa-sign-out"></i> 退出登录</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- 轮播 Banner：只在主体内容宽度内居中 -->
+<section class="banner-swiper">
+  <div class="container swiper-outer">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide active"
+           style="background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=1600&q=80');">
+        <div class="slide-content">
+          <h2>技术交流</h2>
+          <p>欢迎来到机械美学留言板，这里是技术爱好者的聚集地。分享编程经验、硬件知识、机械设计，与同行交流心得，共同成长。</p>
+          <a href="#message-board" class="btn btn-primary">立即参与</a>
+        </div>
+      </div>
+      <div class="swiper-slide"
+           style="background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80');">
+        <div class="slide-content">
+          <h2>硬件改装</h2>
+          <p>机械键盘、外设改装、硬件评测，分享你的动手经验，一起探索极致的手感与性能。</p>
+          <a href="#message-board" class="btn btn-primary">查看分享</a>
+        </div>
+      </div>
+      <div class="swiper-slide"
+           style="background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1600&q=80');">
+        <div class="slide-content">
+          <h2>编程开发</h2>
+          <p>从前端到后端，从算法到架构，记录学习历程，解答技术难题，共同进步。</p>
+          <a href="#message-board" class="btn btn-primary">开始交流</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="swiper-dots">
+      <span class="dot active" data-index="0"></span>
+      <span class="dot" data-index="1"></span>
+      <span class="dot" data-index="2"></span>
+    </div>
+  </div>
+</section>
+
+<div class="container main-container">
+
+  <!-- 功能介绍卡片：改成 3 列 -->
+  <section class="features-section" id="features">
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fa fa-code"></i></div>
+      <h3>技术分享</h3>
+      <p>分享编程技巧、硬件知识、机械设计经验，共同进步。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fa fa-comments"></i></div>
+      <h3>交流互动</h3>
+      <p>与同行讨论技术难题，互相解答疑问，拓展技术视野。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fa fa-tags"></i></div>
+      <h3>话题分类</h3>
+      <p>按技术领域分类，快速找到感兴趣的内容，精准交流。</p>
+    </div>
+  </section>
+
+  <!-- 留言板主体 -->
+  <section class="message-board-section" id="message-board">
+    <div class="section-header">
+      <h2>热门留言</h2>
+      <a th:if="${session.currentUser != null}" th:href="@{/message/add}" class="btn btn-primary">发布留言</a>
+      <a th:if="${session.currentUser == null}" th:href="@{/login}" class="btn btn-primary">登录发言</a>
+    </div>
+
+    <div class="topic-filter">
+      <a th:href="@{/(keyword=${keyword})}" class="topic-btn" th:classappend="${currentTopic == null} ? 'active' : ''">全部</a>
+      <a th:href="@{/(topic='编程技术', keyword=${keyword})}" class="topic-btn" th:classappend="${currentTopic == '编程技术'} ? 'active' : ''">编程技术</a>
+      <a th:href="@{/(topic='硬件改装', keyword=${keyword})}" class="topic-btn" th:classappend="${currentTopic == '硬件改装'} ? 'active' : ''">硬件改装</a>
+      <a th:href="@{/(topic='机械设计', keyword=${keyword})}" class="topic-btn" th:classappend="${currentTopic == '机械设计'} ? 'active' : ''">机械设计</a>
+      <a th:href="@{/(topic='其他', keyword=${keyword})}" class="topic-btn" th:classappend="${currentTopic == '其他'} ? 'active' : ''">其他</a>
+    </div>
+
+    <div class="search-box">
+      <form th:action="@{/}" method="get">
+        <input type="hidden" name="topic" th:value="${currentTopic}">
+        <input type="text" name="keyword" placeholder="搜索留言内容或用户名..." th:value="${keyword}">
+        <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> 搜索</button>
+      </form>
+    </div>
+
+    <!-- 留言列表：改成 3 列网格 -->
+    <div class="messages-list">
+      <div th:if="${#lists.isEmpty(messageList)}" class="empty-tip">
+        暂无相关留言
+      </div>
+
+      <div th:each="msg : ${messageList}" class="message-card" th:classappend="${msg.isTop == 1} ? 'is-top' : ''">
+        <div class="message-header">
+          <div class="message-author">
+            <div class="message-avatar" th:text="${#strings.substring(msg.username != null ? msg.username : '游',0,1)}"></div>
+            <div>
+              <div class="author-name" th:text="${msg.username != null ? msg.username : '已注销用户'}"></div>
+              <div class="message-meta">
+                <span class="message-time" th:text="${msg.createTime}"></span>
+                <span class="topic-tag" th:text="${msg.topic != null ? msg.topic : '其他'}"></span>
+              </div>
+            </div>
+          </div>
+          <span th:if="${msg.isTop == 1}" class="top-badge"><i class="fa fa-thumb-tack"></i> 置顶</span>
+        </div>
+        <div class="message-content" th:text="${msg.content}"></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+
+
+<!-- 顶部导航栏 -->
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="logo">
+      <i class="fa fa-comments-o"></i> 留言板
+    </div>
+    <nav class="nav-menu">
+      <ul>
+        <li><a th:href="@{/}" th:classappend="${currentTopic == null and #strings.isEmpty(keyword)} ? 'active' : ''">首页</a></li>
+        <li><a href="#features">功能</a></li>
+        <li><a href="#message-board">留言板</a></li>
+        <li><a href="#about">关于我们</a></li>
+      </ul>
+    </nav>
+    <div class="header-auth" th:if="${session.currentUser == null}">
+      <a th:href="@{/login}" class="btn btn-outline">登录</a>
+      <a th:href="@{/register}" class="btn btn-primary">注册</a>
+    </div>
+    <div class="header-user" th:if="${session.currentUser != null}">
+      <div class="user-dropdown">
+        <div class="user-dropdown-trigger">
+          <div class="user-avatar" th:text="${#strings.substring(session.currentUser.username,0,1)}"></div>
+          <span th:text="${session.currentUser.username}"></span>
+          <i class="fa fa-caret-down"></i>
+        </div>
+        <div class="user-dropdown-menu">
+          <a th:href="@{/message/list}"><i class="fa fa-file-text-o"></i> 我的留言</a>
+          <a th:href="@{/message/add}"><i class="fa fa-pencil"></i> 发布留言</a>
+          <a th:if="${session.currentUser.role == 1}" th:href="@{/admin/user}"><i class="fa fa-cog"></i> 管理后台</a>
+          <a th:href="@{/logout}" class="logout-btn"><i class="fa fa-sign-out"></i> 退出登录</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- 轮播 Banner -->
+<section class="banner-swiper">
+  <div class="swiper-wrapper">
+    <div class="swiper-slide active" style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=1920&q=80');">
+      <div class="container slide-content">
+        <h2>技术交流</h2>
+        <p>欢迎来到机械美学留言板，这里是技术爱好者的聚集地。分享编程经验、硬件知识、机械设计，与同行交流心得，共同成长。</p>
+        <a href="#message-board" class="btn btn-primary">立即参与</a>
+      </div>
+    </div>
+    <div class="swiper-slide" style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1920&q=80');">
+      <div class="container slide-content">
+        <h2>硬件改装</h2>
+        <p>机械键盘、外设改装、硬件评测，分享你的动手经验，一起探索极致的手感与性能。</p>
+        <a href="#message-board" class="btn btn-primary">查看分享</a>
+      </div>
+    </div>
+    <div class="swiper-slide" style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1920&q=80');">
+      <div class="container slide-content">
+        <h2>编程开发</h2>
+        <p>从前端到后端，从算法到架构，记录学习历程，解答技术难题，共同进步。</p>
+        <a href="#message-board" class="btn btn-primary">开始交流</a>
+      </div>
+    </div>
+  </div>
+  <div class="swiper-dots">
+    <span class="dot active" data-index="0"></span>
+    <span class="dot" data-index="1"></span>
+    <span class="dot" data-index="2"></span>
+  </div>
+</section>
+
+<div class="container main-container">
+  <!-- 功能介绍卡片 -->
+  <section class="features-section" id="features">
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fa fa-code"></i></div>
+      <h3>技术分享</h3>
+      <p>分享编程技巧、硬件知识、机械设计经验，共同进步。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fa fa-comments"></i></div>
+      <h3>交流互动</h3>
+      <p>与同行讨论技术难题，互相解答疑问，拓展技术视野。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fa fa-tags"></i></div>
+      <h3>话题分类</h3>
+      <p>按技术领域分类，快速找到感兴趣的内容，精准交流。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fa fa-star"></i></div>
+      <h3>收藏精华</h3>
+      <p>收藏有价值的技术分享，打造个人专属技术知识库。</p>
+    </div>
+  </section>
+
+  <!-- 留言板主体 -->
+  <section class="message-board-section" id="message-board">
+    <div class="section-header">
+      <h2>热门留言</h2>
+      <a th:if="${session.currentUser != null}" th:href="@{/message/add}" class="btn btn-primary">发布留言</a>
+      <a th:if="${session.currentUser == null}" th:href="@{/login}" class="btn btn-primary">登录发言</a>
+    </div>
+
+    <!-- 话题分类筛选 -->
+    <div class="topic-filter">
+      <a th:href="@{/(keyword=${keyword})}" class="topic-btn" th:classappend="${currentTopic == null} ? 'active' : ''">全部</a>
+      <a th:href="@{/(topic='编程技术', keyword=${keyword})}" class="topic-btn" th:classappend="${currentTopic == '编程技术'} ? 'active' : ''">编程技术</a>
+      <a th:href="@{/(topic='硬件改装', keyword=${keyword})}" class="topic-btn" th:classappend="${currentTopic == '硬件改装'} ? 'active' : ''">硬件改装</a>
+      <a th:href="@{/(topic='机械设计', keyword=${keyword})}" class="topic-btn" th:classappend="${currentTopic == '机械设计'} ? 'active' : ''">机械设计</a>
+      <a th:href="@{/(topic='其他', keyword=${keyword})}" class="topic-btn" th:classappend="${currentTopic == '其他'} ? 'active' : ''">其他</a>
+    </div>
 
     <!-- 搜索框 -->
     <div class="search-box">
-      <form th:action="@{/}" method="get" style="display: flex; width: 100%; gap: 12px; align-items: center;">
-        <input
-                type="text"
-                name="keyword"
-                placeholder="搜索留言内容或用户名..."
-                th:value="${keyword}"
-                style="flex: 1;"
-        />
-        <button type="submit" class="btn btn-primary">搜索</button>
-      </form>
-    </div>
-    <!-- 发布留言框（加宽加大） -->
-    <div class="publish-box" th:if="${session.currentUser != null}">
-      <form th:action="@{/message/add}" method="post">
-        <textarea name="content" placeholder="分享你的想法，参与今天的讨论吧～" required></textarea>
-        <div class="publish-footer">
-          <span class="publish-tip">友善发言，理性交流</span>
-          <button type="submit" class="btn btn-primary">发布留言</button>
-        </div>
+      <form th:action="@{/}" method="get">
+        <input type="hidden" name="topic" th:value="${currentTopic}">
+        <input type="text" name="keyword" placeholder="搜索留言内容或用户名..." th:value="${keyword}">
+        <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> 搜索</button>
       </form>
     </div>
 
-    <!-- 置顶留言走马灯 -->
-    <div class="swiper-top" th:if="${!#lists.isEmpty(topList)}">
-      <div class="swiper-top-wrapper">
-        <div th:each="msg, stat : ${topList}"
-             class="swiper-top-slide"
-             th:classappend="${stat.index == 0} ? 'active' : ''">
-          <span th:text="${msg.content}"></span>
-          <div class="top-user">—— <span th:text="${msg.username}"></span></div>
-        </div>
-      </div>
-      <div class="swiper-top-dots">
-                    <span th:each="msg, stat : ${topList}"
-                          class="swiper-top-dot"
-                          th:classappend="${stat.index == 0} ? 'active' : ''"></span>
-      </div>
-    </div>
-
-    <!-- 全部留言 -->
-    <div class="card">
-      <div class="card-header">
-        <h3>全部留言</h3>
-        <a th:if="${session.currentUser != null}" th:href="@{/message/add}" class="btn btn-primary">我要发言</a>
-        <a th:if="${session.currentUser == null}" th:href="@{/login}" class="btn btn-primary">登录发言</a>
-      </div>
-
+    <!-- 留言列表 -->
+    <div class="messages-list">
       <div th:if="${#lists.isEmpty(messageList)}" class="empty-tip">
-        暂无留言，快来发布第一条吧～
+        暂无相关留言
       </div>
 
-      <div th:each="msg : ${messageList}"
-           class="message-item"
-           th:classappend="${msg.isTop == 1} ? 'is-top' : ''">
+      <div th:each="msg : ${messageList}" class="message-card" th:classappend="${msg.isTop == 1} ? 'is-top' : ''">
         <div class="message-header">
-          <div class="message-user">
-            <div class="user-avatar" th:text="${#strings.substring(msg.username,0,1)}"></div>
+          <div class="message-author">
+            <div class="message-avatar" th:text="${#strings.substring(msg.username != null ? msg.username : '游',0,1)}"></div>
             <div>
-              <div class="user-name">
-                <span th:text="${msg.username != null ? msg.username : '已注销用户'}"></span>
-                <span th:if="${msg.isTop == 1}" class="top-badge">置顶</span>
-              </div>
+              <div class="author-name" th:text="${msg.username != null ? msg.username : '已注销用户'}"></div>
               <div class="message-meta">
                 <span class="message-time" th:text="${msg.createTime}"></span>
+                <span class="topic-tag" th:text="${msg.topic != null ? msg.topic : '其他'}"></span>
               </div>
             </div>
           </div>
+          <span th:if="${msg.isTop == 1}" class="top-badge"><i class="fa fa-thumb-tack"></i> 置顶</span>
         </div>
         <div class="message-content" th:text="${msg.content}"></div>
-        <!-- 回复列表 -->
-        <div class="reply-list" th:if="${!#lists.isEmpty(replyMap[msg.id])}">
-          <div th:each="reply : ${replyMap[msg.id]}" class="reply-item">
-            <div class="reply-header">
-              <span class="reply-user" th:text="${reply.username != null ? reply.username : '已注销用户'}"></span>
-              <span class="reply-time" th:text="${reply.createTime}"></span>
-              <a th:if="${session.currentUser != null and (session.currentUser.role == 1 or reply.userId == session.currentUser.id)}"
-                 th:href="@{/reply/delete/{id}(id=${reply.id})}"
-                 class="reply-del"
-                 onclick="return confirm('确定删除该回复吗？')">删除</a>
-            </div>
-            <div class="reply-content" th:text="${reply.content}"></div>
-          </div>
-        </div>
-
-        <!-- 回复输入框（登录后可见） -->
-        <div class="reply-box" th:if="${session.currentUser != null}">
-          <form th:action="@{/reply/add}" method="post">
-            <input type="hidden" name="messageId" th:value="${msg.id}">
-            <input type="text" name="content" placeholder="写下你的回复..." required class="reply-input">
-            <button type="submit" class="btn btn-primary reply-btn">回复</button>
-          </form>
-        </div>
       </div>
     </div>
-  </div>
-
-  <!-- 右侧边栏 -->
-  <div class="sidebar">
-    <div class="card user-card" th:if="${session.currentUser != null}">
-      <div class="user-avatar" th:text="${#strings.substring(session.currentUser.username,0,1)}"></div>
-      <div class="nickname" th:text="${session.currentUser.username}"></div>
-      <span class="role-tag" th:classappend="${session.currentUser.role == 1 ? 'admin' : ''}"
-            th:text="${session.currentUser.role == 1 ? '管理员' : '普通用户'}"></span>
-      <div class="stat-row">
-        <div class="stat-item">
-          <div class="num" th:text="${#lists.size(messageList)}">0</div>
-          <div class="label">总留言数</div>
-        </div>
-      </div>
-      <div style="margin-top: 20px;">
-        <a th:href="@{/message/add}" class="btn btn-primary" style="width: 100%; display: block;">发布新留言</a>
-      </div>
-    </div>
-
-    <div class="card" th:if="${session.currentUser == null}">
-      <div class="card-header">
-        <h3>欢迎来访</h3>
-      </div>
-      <div class="card-body">
-        <p style="font-size: 14px; color: #B0B0B0; margin-bottom: 20px; line-height: 1.7;">
-          登录后即可发布留言，参与讨论，管理自己的内容～
-        </p>
-        <a th:href="@{/login}" class="btn btn-primary" style="width: 100%; display: block; margin-bottom: 12px;">立即登录</a>
-        <a th:href="@{/register}" class="btn btn-default" style="width: 100%; display: block;">注册账号</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <h3>快捷菜单</h3>
-      </div>
-      <div class="quick-menu">
-        <a th:href="@{/index}" class="active">🏠 留言广场</a>
-        <a th:if="${session.currentUser != null}" th:href="@{/message/list}">📝 我的留言</a>
-        <a th:if="${session.currentUser != null and session.currentUser.role == 1}" th:href="@{/admin/user}">⚙️ 管理后台</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <h3>论坛提示</h3>
-      </div>
-      <div class="card-body">
-        <p style="font-size: 13px; color: #B0B0B0; line-height: 1.8;">
-          1. 请文明发言，尊重他人<br>
-          2. 禁止发布违规、广告内容<br>
-          3. 管理员会及时处理违规留言
-        </p>
-      </div>
-    </div>
-  </div>
+  </section>
 </div>
+
+<!-- 页脚 -->
+<footer id="about">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <h3>快速链接</h3>
+      <ul>
+        <li><a th:href="@{/}">首页</a></li>
+        <li><a th:href="@{/login}">登录</a></li>
+        <li><a th:href="@{/register}">注册</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h3>联系我们</h3>
+      <ul>
+        <li><i class="fa fa-envelope-o"></i> tech@messageboard.com</li>
+        <li><i class="fa fa-github"></i> GitHub 开源项目</li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h3>订阅更新</h3>
+      <p>订阅技术周刊，获取最新技术资讯和社区消息。</p>
+    </div>
+  </div>
+  <div class="copyright">
+    <div class="container">
+      © 2026 留言板 版权所有
+    </div>
+  </div>
+</footer>
 
 <script th:src="@{/js/index.js}"></script>
 <script th:src="@{/js/star-bg.js}"></script>

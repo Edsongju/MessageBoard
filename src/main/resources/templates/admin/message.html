@@ -5,21 +5,42 @@
   <title>留言管理 - 后台管理</title>
   <link rel="stylesheet" th:href="@{/css/common.css}">
   <link rel="stylesheet" th:href="@{/css/admin.css}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
 </head>
 <body>
 <!-- 星空背景 -->
 <canvas id="starBg"></canvas>
 
-<div class="navbar">
-  <div class="nav-container">
-    <div class="nav-logo">⚙️ 留言板管理后台</div>
-    <div class="nav-user">
-      <span>管理员：<span th:text="${session.currentUser.username}"></span></span>
-      <a th:href="@{/index}">返回前台</a>
-      <a th:href="@{/logout}">退出</a>
+<!-- 新版顶部导航栏 -->
+<header class="admin-topbar">
+  <div class="admin-topbar-inner">
+    <div class="admin-brand">
+      <i class="fa fa-cog"></i>
+      <span>留言板管理后台</span>
+    </div>
+
+    <nav class="admin-top-nav">
+      <a th:href="@{/admin/user}" th:classappend="${currentAdminPage == 'user'} ? 'active' : ''">
+        <i class="fa fa-users"></i> 用户管理
+      </a>
+      <a th:href="@{/admin/message}" th:classappend="${currentAdminPage == 'message'} ? 'active' : ''">
+        <i class="fa fa-comments"></i> 留言管理
+      </a>
+    </nav>
+
+    <div class="admin-user-box">
+      <span class="admin-user-label">
+        <i class="fa fa-user-circle"></i> 管理员：<strong th:text="${session.currentUser.username}"></strong>
+      </span>
+      <a th:href="@{/}" class="admin-link">
+        <i class="fa fa-home"></i> 返回前台
+      </a>
+      <a th:href="@{/logout}" class="admin-link admin-link-danger">
+        <i class="fa fa-sign-out"></i> 退出
+      </a>
     </div>
   </div>
-</div>
+</header>
 
 <div class="admin-layout">
   <div class="admin-sidebar">
@@ -35,7 +56,7 @@
       <span>共 <span th:text="${#lists.size(list)}"></span> 条留言</span>
     </div>
 
-    <!-- 搜索框：移入内容区内部，布局正常 -->
+    <!-- 搜索框 -->
     <div class="search-box admin-search">
       <form th:action="@{/admin/message}" method="get">
         <input
@@ -44,7 +65,7 @@
                 placeholder="搜索留言内容或用户名..."
                 th:value="${keyword}"
         >
-        <button type="submit" class="btn btn-primary">搜索</button>
+        <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> 搜索</button>
       </form>
     </div>
 
@@ -62,7 +83,7 @@
           <th width="120">发布人</th>
           <th>留言内容</th>
           <th width="180">发布时间</th>
-          <th width="200">操作</th>
+          <th width="220">操作</th>
         </tr>
         </thead>
         <tbody>
@@ -76,11 +97,14 @@
           <td th:text="${m.createTime}"></td>
           <td class="operate">
             <a class="top-btn" th:href="@{/admin/message/top/{id}(id=${m.id})}">
+              <i class="fa fa-thumb-tack"></i>
               <span th:if="${m.isTop == 1}">取消置顶</span>
               <span th:if="${m.isTop != 1}">设为置顶</span>
             </a>
             <a class="del-link" th:href="@{/admin/message/delete/{id}(id=${m.id})}"
-               onclick="return confirm('确定删除该留言吗？')">删除</a>
+               onclick="return confirm('确定删除该留言吗？')">
+              <i class="fa fa-trash-o"></i> 删除
+            </a>
           </td>
         </tr>
         </tbody>

@@ -1,11 +1,141 @@
+/* ========== 后台顶部导航栏 ========== */
+.admin-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    background: rgba(20, 20, 24, 0.85);
+    border-bottom: 2px solid #ff6600;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.admin-topbar-inner {
+    width: 1200px;
+    margin: 0 auto;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+}
+
+.admin-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 800;
+    color: #ff6600;
+}
+
+.admin-brand i {
+    font-size: 20px;
+}
+
+/* 顶部导航菜单 */
+.admin-top-nav {
+    display: flex;
+    gap: 6px;
+}
+
+.admin-top-nav a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    color: #cccccc;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.admin-top-nav a:hover {
+    color: #ff6600;
+    background: rgba(255, 102, 0, 0.08);
+}
+
+.admin-top-nav a.active {
+    color: #ff6600;
+    background: rgba(255, 102, 0, 0.12);
+}
+
+.admin-top-nav a.active::after {
+    content: "";
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 4px;
+    height: 2px;
+    background: linear-gradient(90deg, #ff6600, #ff9900);
+    border-radius: 2px;
+}
+
+/* 右侧管理员信息 */
+.admin-user-box {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.admin-user-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #cccccc;
+}
+
+.admin-user-label i {
+    color: #ff6600;
+    font-size: 16px;
+}
+
+.admin-user-label strong {
+    color: #ffffff;
+    margin-left: 4px;
+}
+
+.admin-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    color: #cccccc;
+    text-decoration: none;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    transition: all 0.2s;
+}
+
+.admin-link:hover {
+    color: #ff6600;
+    border-color: #ff6600;
+    background: rgba(255, 102, 0, 0.1);
+}
+
+.admin-link-danger:hover {
+    color: #ff8573;
+    border-color: #ff6b5b;
+    background: rgba(255, 92, 92, 0.1);
+}
+
+/* ========== 主体布局 ========== */
 .admin-layout {
     display: flex;
     min-height: calc(100vh - 64px);
+    width: 1200px;
+    margin: 0 auto;
 }
 
+/* ========== 侧边栏 ========== */
 .admin-sidebar {
     width: 220px;
-    background: rgba(28, 28, 32, 0.55);
+    background: rgba(28, 28, 32, 0.6);
     border-right: 1px solid rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -24,22 +154,25 @@
     font-size: 14px;
     transition: all 0.2s;
     border-left: 3px solid transparent;
+    text-decoration: none;
 }
 
 .admin-menu a:hover,
 .admin-menu a.active {
-    background: rgba(255, 138, 0, 0.1);
-    color: #FF8A00;
-    border-left-color: #FF8A00;
+    background: rgba(255, 102, 0, 0.1);
+    color: #ff6600;
+    border-left-color: #ff6600;
 }
 
+/* ========== 主内容区 ========== */
 .admin-content {
     flex: 1;
     padding: 24px;
+    background: rgba(42, 42, 42, 0.5);
 }
 
 .admin-page-header {
-    background: rgba(28, 28, 32, 0.55);
+    background: rgba(28, 28, 32, 0.6);
     padding: 18px 24px;
     border-radius: 16px;
     margin-bottom: 20px;
@@ -56,8 +189,37 @@
     color: #FFFFFF;
 }
 
+/* ========== 搜索框 ========== */
+.admin-search {
+    margin-bottom: 20px;
+}
+
+.admin-search form {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.admin-search input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(12, 12, 16, 0.45);
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.admin-search input:focus {
+    border-color: #ff6600;
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.15);
+}
+
+/* ========== 表格卡片 ========== */
 .table-card {
-    background: rgba(28, 28, 32, 0.55);
+    background: rgba(28, 28, 32, 0.6);
     border-radius: 16px;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -91,19 +253,42 @@
     background: rgba(255, 255, 255, 0.03);
 }
 
+/* ========== 表格操作按钮 ========== */
 .data-table .operate a {
     margin-right: 12px;
     font-size: 13px;
-}
-
-.data-table .operate .del-link {
-    color: #FF6B5B;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    transition: all 0.2s;
 }
 
 .data-table .operate .top-btn {
-    color: #FF8A00;
+    color: #ff6600;
+    background: rgba(255, 102, 0, 0.1);
+    border: 1px solid rgba(255, 102, 0, 0.35);
 }
 
+.data-table .operate .top-btn:hover {
+    background: #ff6600;
+    color: #121212;
+}
+
+.data-table .operate .del-link {
+    color: #ff6b5b;
+    background: rgba(255, 92, 92, 0.1);
+    border: 1px solid rgba(255, 92, 92, 0.35);
+}
+
+.data-table .operate .del-link:hover {
+    background: #ff5c5c;
+    color: #ffffff;
+}
+
+/* ========== 标签样式 ========== */
 .role-tag {
     display: inline-block;
     padding: 3px 10px;
@@ -118,7 +303,7 @@
 }
 
 .role-tag.admin {
-    background: #FF8A00;
+    background: #ff6600;
     color: #121212;
 }
 
@@ -130,7 +315,7 @@
 }
 
 .top-row {
-    background: rgba(255, 138, 0, 0.07) !important;
+    background: rgba(255, 102, 0, 0.07) !important;
 }
 
 .top-tag {
@@ -139,32 +324,15 @@
     border-radius: 999px;
     font-size: 12px;
     font-weight: 600;
-    background: #FF8A00;
+    background: #ff6600;
     color: #121212;
     margin-right: 8px;
 }
-/* ========== 后台搜索框 ========== */
-.admin-search {
-    margin-bottom: 20px;
-}
-.admin-search form {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
-.admin-search input {
-    flex: 1;
-    padding: 10px 14px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    background: rgba(12, 12, 16, 0.45);
-    color: #fff;
-    font-size: 14px;
-    outline: none;
-    transition: all 0.2s;
-}
-.admin-search input:focus {
-    border-color: #FF8A00;
-    box-shadow: 0 0 0 3px rgba(255, 138, 0, 0.15);
-}
 
+/* ========== 响应式 ========== */
+@media (max-width: 1200px) {
+    .admin-topbar-inner,
+    .admin-layout {
+        width: 100%;
+    }
+}

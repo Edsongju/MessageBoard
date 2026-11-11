@@ -1,27 +1,37 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const slides = document.querySelectorAll(".swiper-top-slide");
-    const dots = document.querySelectorAll(".swiper-top-dot");
-
-    if (slides.length === 0) return;
-
+// 轮播图自动播放
+document.addEventListener('DOMContentLoaded', function () {
+    const slides = document.querySelectorAll('.swiper-slide');
+    const dots = document.querySelectorAll('.swiper-dots .dot');
     let currentIndex = 0;
+    let timer = null;
 
-    function showSlide(index) {
+    // 切换到指定索引
+    function switchSlide(index) {
         slides.forEach((slide, i) => {
-            slide.classList.toggle("active", i === index);
+            slide.classList.toggle('active', i === index);
         });
         dots.forEach((dot, i) => {
-            dot.classList.toggle("active", i === index);
+            dot.classList.toggle('active', i === index);
         });
         currentIndex = index;
     }
 
-    dots.forEach((dot, i) => {
-        dot.addEventListener("click", () => showSlide(i));
+    // 自动轮播
+    function startAutoPlay() {
+        timer = setInterval(() => {
+            let next = (currentIndex + 1) % slides.length;
+            switchSlide(next);
+        }, 4000);
+    }
+
+    // 点击圆点切换
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            switchSlide(index);
+            clearInterval(timer);
+            startAutoPlay();
+        });
     });
 
-    setInterval(() => {
-        const nextIndex = (currentIndex + 1) % slides.length;
-        showSlide(nextIndex);
-    }, 4000);
+    startAutoPlay();
 });
