@@ -11,4 +11,6 @@ public class ReplyVO {
     private String username;
     private String content;
     private LocalDateTime createTime;
+    private Integer visibility;
+    private String visibleUsernames;
 }

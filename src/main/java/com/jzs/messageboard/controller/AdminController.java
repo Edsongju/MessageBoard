@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -48,8 +48,11 @@ public class AdminController {
 
     // 留言管理列表（支持搜索）
     @GetMapping("/message")
-    public String messageList(@RequestParam(required = false) String keyword, Model model) {
-        List<MessageVO> list = messageService.listAllWithUsername(keyword);
+    public String messageList(@RequestParam(required = false) String keyword,
+                              HttpSession session,
+                              Model model) {
+        SysUser admin = (SysUser) session.getAttribute("currentUser");
+        List<MessageVO> list = messageService.listAllWithUsername(keyword, admin.getId(), admin.getUsername(), true);
         model.addAttribute("list", list);
         model.addAttribute("keyword", keyword);
         model.addAttribute("currentAdminPage", "message");

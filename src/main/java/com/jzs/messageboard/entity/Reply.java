@@ -18,4 +18,6 @@ public class Reply {
     @TableLogic
     private Integer status;
     private LocalDateTime createTime;
+    private Integer visibility;
+    private String visibleUsernames;
 }

@@ -18,4 +18,6 @@ public class Message {
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
     private String topic;
+    private Integer visibility;
+    private String visibleUsernames;
 }

@@ -1,96 +1,68 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>用户管理 - 后台管理</title>
-    <link rel="stylesheet" th:href="@{/css/common.css}">
-    <link rel="stylesheet" th:href="@{/css/admin.css}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户管理 - 后台</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<!-- 星空背景 -->
-<canvas id="starBg"></canvas>
-
-<!-- 新版顶部导航栏 -->
-<header class="admin-topbar">
-    <div class="admin-topbar-inner">
-        <div class="admin-brand">
-            <i class="fa fa-cog"></i>
-            <span>留言板管理后台</span>
-        </div>
-
-        <nav class="admin-top-nav">
-            <a th:href="@{/admin/user}" th:classappend="${currentAdminPage == 'user'} ? 'active' : ''">
-                <i class="fa fa-users"></i> 用户管理
-            </a>
-            <a th:href="@{/admin/message}" th:classappend="${currentAdminPage == 'message'} ? 'active' : ''">
-                <i class="fa fa-comments"></i> 留言管理
-            </a>
-        </nav>
-
-        <div class="admin-user-box">
-            <span class="admin-user-label">
-                <i class="fa fa-user-circle"></i> 管理员：<strong th:text="${session.currentUser.username}"></strong>
-            </span>
-            <a th:href="@{/}" class="admin-link">
-                <i class="fa fa-home"></i> 返回前台
-            </a>
-            <a th:href="@{/logout}" class="admin-link admin-link-danger">
-                <i class="fa fa-sign-out"></i> 退出
-            </a>
+<nav class="navbar">
+    <div class="container">
+        <div class="nav-logo">留言板后台</div>
+        <div class="nav-menu">
+            <!-- 新增：返回前台首页 -->
+            <a th:href="@{/index}">← 返回前台</a>
+            <a th:href="@{/admin/user}"
+               th:classappend="${currentAdminPage == 'user'} ? 'active'">用户管理</a>
+            <a th:href="@{/admin/message}"
+               th:classappend="${currentAdminPage == 'message'} ? 'active'">留言管理</a>
+            <span class="nav-user" th:text="'管理员：' + ${session.currentUser.username}"></span>
+            <a th:href="@{/logout}">退出</a>
         </div>
     </div>
-</header>
+</nav>
 
-<div class="admin-layout">
-    <div class="admin-sidebar">
-        <div class="admin-menu">
-            <a th:href="@{/admin/user}" class="active">👥 用户管理</a>
-            <a th:href="@{/admin/message}">💬 留言管理</a>
+<main class="main">
+    <div class="container">
+        <!-- 新增：标题栏返回按钮 -->
+        <div class="page-actions">
+            <h1 class="page-title">用户管理</h1>
+            <a th:href="@{/index}" class="btn btn-outline">返回首页</a>
         </div>
+
+        <table class="admin-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>用户名</th>
+                <th>角色</th>
+                <th>注册时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${list}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.username}"></td>
+                <td>
+                    <span class="role-tag admin" th:if="${user.role == 1}">管理员</span>
+                    <span class="role-tag user" th:if="${user.role == 0 or user.role == null}">普通用户</span>
+                </td>
+                <td th:text="${#temporals.format(user.createTime, 'yyyy-MM-dd')}"></td>
+                <td>
+                    <a th:href="@{/admin/user/setAdmin/{id}(id=${user.id})}"
+                       class="btn btn-outline"
+                       th:if="${user.role != 1}">设为管理员</a>
+                    <a th:href="@{/admin/user/delete/{id}(id=${user.id})}"
+                       class="btn btn-danger delete-btn">删除</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
+</main>
 
-    <div class="admin-content">
-        <div class="admin-page-header">
-            <h2>用户管理</h2>
-            <span>共 <span th:text="${#lists.size(list)}"></span> 位用户</span>
-        </div>
-
-        <div class="table-card">
-            <table class="data-table">
-                <thead>
-                <tr>
-                    <th width="80">ID</th>
-                    <th width="140">用户名</th>
-                    <th width="120">角色</th>
-                    <th width="180">注册时间</th>
-                    <th>操作</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="u : ${list}">
-                    <td th:text="${u.id}"></td>
-                    <td th:text="${u.username}"></td>
-                    <td>
-                        <span class="role-tag" th:classappend="${u.role == 1 ? 'admin' : 'user'}"
-                              th:text="${u.role == 1 ? '管理员' : '普通用户'}"></span>
-                    </td>
-                    <td th:text="${u.createTime}"></td>
-                    <td class="operate">
-                        <a th:if="${u.role == 0}" th:href="@{/admin/user/setAdmin/{id}(id=${u.id})}"
-                           class="top-btn"
-                           onclick="return confirm('确认设为管理员？')">
-                            <i class="fa fa-user-plus"></i> 设为管理员
-                        </a>
-                        <span th:if="${u.role == 1}" style="color:#888;">超级管理员</span>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<script th:src="@{/js/star-bg.js}"></script>
+<script th:src="@{/js/main.js}"></script>
 </body>
 </html>

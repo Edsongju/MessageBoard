@@ -1,62 +1,56 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>发布留言 - 留言论坛</title>
-    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发布留言 - 留言板</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<!-- 星空背景 -->
-<canvas id="starBg"></canvas>
-
-<div class="navbar">
-    <div class="nav-container">
-        <div class="nav-logo">💬 留言论坛</div>
+<nav class="navbar">
+    <div class="container">
+        <div class="nav-logo">留言板</div>
         <div class="nav-menu">
-            <a th:href="@{/index}">留言广场</a>
-            <a th:href="@{/message/list}">个人中心</a>
-        </div>
-        <div class="nav-user">
+            <a th:href="@{/index}">首页广场</a>
+            <a th:href="@{/message/list}">我的留言</a>
+            <span class="nav-user" th:text="'你好，' + ${session.currentUser.username}"></span>
             <a th:href="@{/logout}">退出</a>
         </div>
     </div>
-</div>
+</nav>
 
-<div class="container">
-    <div class="main-content">
-        <div class="card">
-            <div class="card-header">
-                <h3>发布新留言</h3>
-            </div>
-            <div class="card-body">
-                <form th:action="@{/message/add}" method="post">
-                    <div class="form-group">
-                        <label>留言内容</label>
-                        <textarea name="content" class="form-control" placeholder="分享你的想法..." required></textarea>
+<main class="main">
+    <div class="container">
+        <h1 class="page-title">发布新留言</h1>
+
+        <div class="form-wrapper" style="max-width: 600px; margin: 0 auto;">
+            <form th:action="@{/message/add}" method="post">
+                <div class="form-group">
+                    <label>留言分类</label>
+                    <select name="topic">
+                        <option value="日常">日常</option>
+                        <option value="求助">求助</option>
+                        <option value="分享">分享</option>
+                    </select>
+                    <label>可见范围</label>
+                    <div class="visibility-group">
+                        <label><input type="radio" name="visibility" value="0" checked> 公开（所有人可见）</label>
+                        <label><input type="radio" name="visibility" value="1"> 私有（仅自己可见）</label>
+                        <label><input type="radio" name="visibility" value="2"> 指定用户可见</label>
                     </div>
-                    <button type="submit" class="btn btn-primary">立即发布</button>
-                    <a th:href="@{/index}" class="btn btn-default">返回广场</a>
-                </form>
-            </div>
+                    <input type="text" name="visibleUsernames" id="visibleUsernames"
+                           placeholder="输入用户名，多个用英文逗号分隔" style="display:none; margin-top:8px;">
+                </div>
+                <div class="form-group">
+                    <label>留言内容</label>
+                    <textarea name="content" rows="6" required placeholder="请输入留言内容..."></textarea>
+                </div>
+                <button type="submit" class="form-submit">发布留言</button>
+            </form>
         </div>
     </div>
+</main>
 
-    <div class="sidebar">
-        <div class="card">
-            <div class="card-header">
-                <h3>发帖提示</h3>
-            </div>
-            <div class="card-body">
-                <p style="font-size: 13px; color: #B0B0B0; line-height: 1.8;">
-                    1. 内容请遵守社区规范<br>
-                    2. 建议发布有价值观点<br>
-                    3. 禁止广告、刷屏和违规内容
-                </p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script th:src="@{/js/star-bg.js}"></script>
+<script th:src="@{/js/main.js}"></script>
 </body>
 </html>

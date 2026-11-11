@@ -7,6 +7,10 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface MessageMapper extends BaseMapper<Message> {
+    List<MessageVO> listAllWithUsername(@Param("keyword") String keyword,
+                                        @Param("currentUserId") Long currentUserId,
+                                        @Param("currentUsername") String currentUsername,
+                                        @Param("isAdmin") boolean isAdmin);
     // 广场/后台通用：联表查询所有留言，支持关键词搜索
     List<MessageVO> listAllWithUsername(@Param("keyword") String keyword);
 

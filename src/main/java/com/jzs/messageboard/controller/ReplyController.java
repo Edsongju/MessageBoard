@@ -19,7 +19,11 @@ public class ReplyController {
 
     // 发布回复
     @PostMapping("/add")
-    public String addReply(Long messageId, String content, HttpSession session) {
+    public String addReply(Long messageId,
+                           String content,
+                           @RequestParam(value = "visibility", defaultValue = "0") Integer visibility,
+                           @RequestParam(value = "visibleUsernames", required = false) String visibleUsernames,
+                           HttpSession session) {
         SysUser currentUser = (SysUser) session.getAttribute("currentUser");
         if (currentUser == null) {
             return "redirect:/login";
@@ -28,9 +32,16 @@ public class ReplyController {
         reply.setMessageId(messageId);
         reply.setUserId(currentUser.getId());
         reply.setContent(content);
+        reply.setVisibility(visibility);
+        if (visibility != 2) {
+            reply.setVisibleUsernames(null);
+        } else {
+            reply.setVisibleUsernames(visibleUsernames);
+        }
         replyService.add(reply);
         return "redirect:/";
     }
+
 
     // 删除回复
     @GetMapping("/delete/{id}")

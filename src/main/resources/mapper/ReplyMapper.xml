@@ -16,5 +16,34 @@
         WHERE r.message_id = #{messageId} AND r.status = 1
         ORDER BY r.create_time ASC
     </select>
+    <select id="listByMessageId" resultType="com.jzs.messageboard.vo.ReplyVO">
+        SELECT
+        r.id,
+        r.message_id AS messageId,
+        r.user_id AS userId,
+        u.username,
+        r.content,
+        r.create_time AS createTime,
+        r.visibility,
+        r.visible_usernames AS visibleUsernames
+        FROM reply r
+        LEFT JOIN sys_user u ON r.user_id = u.id
+        <where>
+            r.message_id = #{messageId} AND r.status = 1
+            <!-- 可见性过滤：管理员跳过 -->
+            <if test="isAdmin == false">
+                AND (
+                r.visibility = 0
+                <if test="currentUserId != null">
+                    OR r.user_id = #{currentUserId}
+                </if>
+                <if test="currentUsername != null">
+                    OR (r.visibility = 2 AND FIND_IN_SET(#{currentUsername}, r.visible_usernames))
+                </if>
+                )
+            </if>
+        </where>
+        ORDER BY r.create_time ASC
+    </select>
 
 </mapper>
