@@ -1,5 +1,6 @@
 package com.jzs.messageboard.controller;
 
+import com.jzs.messageboard.entity.Message;
 import com.jzs.messageboard.entity.SysUser;
 import com.jzs.messageboard.service.MessageService;
 import com.jzs.messageboard.service.SysUserService;
@@ -53,6 +54,20 @@ public class AdminController {
     @GetMapping("/message/delete/{id}")
     public String deleteMessage(@PathVariable("id") Long id) {
         messageService.deleteById(id);
+        return "redirect:/admin/message";
+    }
+    @GetMapping("/message/top/{id}")
+    public String toggleTop(@PathVariable("id") Long id) {
+        Message message = messageService.selectById(id);
+        if (message != null) {
+            // 状态切换：0 → 1，1 → 0
+            if (message.getIsTop() == null || message.getIsTop() == 0) {
+                message.setIsTop(1);
+            } else {
+                message.setIsTop(0);
+            }
+            messageService.update(message);
+        }
         return "redirect:/admin/message";
     }
 }
