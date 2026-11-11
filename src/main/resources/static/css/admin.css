@@ -143,3 +143,28 @@
     color: #121212;
     margin-right: 8px;
 }
+/* ========== 后台搜索框 ========== */
+.admin-search {
+    margin-bottom: 20px;
+}
+.admin-search form {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+.admin-search input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(12, 12, 16, 0.45);
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s;
+}
+.admin-search input:focus {
+    border-color: #FF8A00;
+    box-shadow: 0 0 0 3px rgba(255, 138, 0, 0.15);
+}
+
