@@ -1,75 +1,77 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>留言管理 - 后台管理</title>
-  <link rel="stylesheet" th:href="@{/css/common.css}">
-  <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>留言管理 - 后台</title>
+    <link rel="stylesheet" th:href="@{/css/starlight.css}">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
 </head>
 <body>
-<!-- 星空背景 -->
-<canvas id="starBg"></canvas>
-
-<div class="navbar">
-  <div class="nav-container">
-    <div class="nav-logo">⚙️ 留言板管理后台</div>
-    <div class="nav-user">
-      <span>管理员：<span th:text="${session.currentUser.username}"></span></span>
-      <a th:href="@{/index}">返回前台</a>
-      <a th:href="@{/logout}">退出</a>
+<nav class="navbar">
+    <div class="container">
+        <div class="nav-logo">留言板后台</div>
+        <div class="nav-menu">
+            <a th:href="@{/admin/user}">用户管理</a>
+            <a th:href="@{/admin/message}" class="active">留言管理</a>
+        </div>
+        <div class="nav-user-area">
+            <a th:href="@{/index}">← 返回前台</a>
+            <span class="nav-user" th:text="'管理员：' + ${session.currentUser.username}"></span>
+            <a th:href="@{/logout}">退出</a>
+        </div>
     </div>
-  </div>
-</div>
+</nav>
 
-<div class="admin-layout">
-  <div class="admin-sidebar">
-    <div class="admin-menu">
-      <a th:href="@{/admin/user}">👥 用户管理</a>
-      <a th:href="@{/admin/message}" class="active">💬 留言管理</a>
+<main class="main">
+    <div class="container">
+        <div class="page-actions">
+            <h1 class="page-title">留言管理</h1>
+            <a th:href="@{/index}" class="btn btn-outline btn-sm">返回首页</a>
+        </div>
+
+        <form class="search-bar" th:action="@{/admin/message}" method="get">
+            <input type="text" name="keyword" placeholder="搜索留言..." th:value="${keyword}">
+            <button type="submit" class="btn btn-primary btn-sm">搜索</button>
+        </form>
+
+        <table class="admin-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>发布用户</th>
+                <th>留言内容</th>
+                <th>分类</th>
+                <th>置顶状态</th>
+                <th>发布时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="msg : ${list}">
+                <td th:text="${msg.id}"></td>
+                <td th:text="${msg.username}"></td>
+                <td th:text="${#strings.abbreviate(msg.content, 30)}"></td>
+                <td th:text="${msg.topic}"></td>
+                <td>
+                    <span th:if="${msg.isTop == 1}">已置顶</span>
+                    <span th:if="${msg.isTop == 0 or msg.isTop == null}">未置顶</span>
+                </td>
+                <td th:text="${#temporals.format(msg.createTime, 'yyyy-MM-dd HH:mm')}"></td>
+                <td>
+                    <a th:href="@{/admin/message/top/{id}(id=${msg.id})}"
+                       class="btn btn-outline btn-sm"
+                       th:text="${msg.isTop == 1} ? '取消置顶' : '置顶'"></a>
+                    <a th:href="@{/admin/message/delete/{id}(id=${msg.id})}"
+                       class="btn btn-danger btn-sm delete-btn">删除</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
-  </div>
+</main>
 
-  <div class="admin-content">
-    <div class="admin-page-header">
-      <h2>留言管理</h2>
-      <span>共 <span th:text="${#lists.size(list)}"></span> 条留言</span>
-    </div>
-
-    <div class="table-card">
-      <table class="data-table">
-        <thead>
-        <tr>
-          <th width="80">ID</th>
-          <th width="120">发布人</th>
-          <th>留言内容</th>
-          <th width="180">发布时间</th>
-          <th width="200">操作</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="m : ${list}" th:classappend="${m.isTop == 1} ? 'top-row' : ''">
-          <td th:text="${m.id}"></td>
-          <td th:text="${m.username}"></td>
-          <td class="content-cell">
-            <span th:if="${m.isTop == 1}" class="top-tag">置顶</span>
-            <span th:text="${m.content}"></span>
-          </td>
-          <td th:text="${m.createTime}"></td>
-          <td class="operate">
-            <a class="top-btn" th:href="@{/admin/message/top/{id}(id=${m.id})}">
-              <span th:if="${m.isTop == 1}">取消置顶</span>
-              <span th:if="${m.isTop != 1}">设为置顶</span>
-            </a>
-            <a class="del-link" th:href="@{/admin/message/delete/{id}(id=${m.id})}"
-               onclick="return confirm('确定删除该留言吗？')">删除</a>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<script th:src="@{/js/star-bg.js}"></script>
+<script th:src="@{/js/starlight.js}"></script>
+<script th:src="@{/js/main.js}"></script>
 </body>
 </html>

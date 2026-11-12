@@ -1,175 +1,137 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>留言广场 - 在线留言论坛</title>
-  <link rel="stylesheet" th:href="@{/css/common.css}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>留言板 - 首页广场</title>
+    <link rel="stylesheet" th:href="@{/css/starlight.css}">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-<!-- 星空背景画布 -->
-<canvas id="starBg"></canvas>
-
-<!-- 顶部导航 -->
-<div class="navbar">
-  <div class="nav-container">
-    <div class="nav-logo">💬 留言论坛</div>
-    <div class="nav-menu">
-      <a th:href="@{/index}" class="active">留言广场</a>
-    </div>
-
-    <!-- 未登录状态 -->
-    <div class="nav-user" th:if="${session.currentUser == null}">
-      <a th:href="@{/login}" class="nav-btn">登录</a>
-      <a th:href="@{/register}" class="nav-btn primary">注册</a>
-    </div>
-
-    <!-- 登录状态 - 悬浮下拉菜单 -->
-    <div class="nav-user user-dropdown" th:if="${session.currentUser != null}">
-      <div class="user-dropdown-trigger">
-        <div class="user-avatar" th:text="${#strings.substring(session.currentUser.username,0,1)}"></div>
-        <span th:text="${session.currentUser.username}"></span>
-        <span style="font-size:12px; color:#999;">▼</span>
-      </div>
-      <div class="user-dropdown-menu">
-        <a th:href="@{/message/list}">📝 我的留言</a>
-        <a th:href="@{/message/add}">✏️ 发布留言</a>
-        <a th:if="${session.currentUser.role == 1}" th:href="@{/admin/user}">⚙️ 管理后台</a>
-        <a th:href="@{/logout}" style="color:#FF6B5B;">🚪 退出登录</a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 主体内容 -->
-<div class="container">
-  <div class="main-content">
-
-    <!-- 搜索框 -->
-    <div class="search-box">
-      <input type="text" placeholder="搜索留言内容或用户名..." />
-      <button class="btn btn-primary">搜索</button>
-    </div>
-
-    <!-- 发布留言框（加宽加大） -->
-    <div class="publish-box" th:if="${session.currentUser != null}">
-      <form th:action="@{/message/add}" method="post">
-        <textarea name="content" placeholder="分享你的想法，参与今天的讨论吧～" required></textarea>
-        <div class="publish-footer">
-          <span class="publish-tip">友善发言，理性交流</span>
-          <button type="submit" class="btn btn-primary">发布留言</button>
+<nav class="navbar">
+    <div class="container">
+        <div class="nav-logo">留言板</div>
+        <div class="nav-menu">
+            <a th:href="@{/index}" class="active">首页广场</a>
+            <a th:href="@{/message/list}" th:if="${session.currentUser != null}">我的留言</a>
+            <a th:href="@{/admin/user}" th:if="${session.currentUser != null and session.currentUser.role == 1}">后台管理</a>
         </div>
-      </form>
-    </div>
-
-    <!-- 置顶留言走马灯 -->
-    <div class="swiper-top" th:if="${!#lists.isEmpty(topList)}">
-      <div class="swiper-top-wrapper">
-        <div th:each="msg, stat : ${topList}"
-             class="swiper-top-slide"
-             th:classappend="${stat.index == 0} ? 'active' : ''">
-          <span th:text="${msg.content}"></span>
-          <div class="top-user">—— <span th:text="${msg.username}"></span></div>
+        <div class="nav-user-area">
+                <span class="nav-user" th:if="${session.currentUser != null}"
+                      th:text="'你好，' + ${session.currentUser.username}"></span>
+            <a th:href="@{/logout}" th:if="${session.currentUser != null}">退出</a>
+            <a th:href="@{/login}" th:if="${session.currentUser == null}">登录</a>
+            <a th:href="@{/register}" th:if="${session.currentUser == null}">注册</a>
         </div>
-      </div>
-      <div class="swiper-top-dots">
-                    <span th:each="msg, stat : ${topList}"
-                          class="swiper-top-dot"
-                          th:classappend="${stat.index == 0} ? 'active' : ''"></span>
-      </div>
     </div>
+</nav>
 
-    <!-- 全部留言 -->
-    <div class="card">
-      <div class="card-header">
-        <h3>全部留言</h3>
-        <a th:if="${session.currentUser != null}" th:href="@{/message/add}" class="btn btn-primary">我要发言</a>
-        <a th:if="${session.currentUser == null}" th:href="@{/login}" class="btn btn-primary">登录发言</a>
-      </div>
-
-      <div th:if="${#lists.isEmpty(messageList)}" class="empty-tip">
-        暂无留言，快来发布第一条吧～
-      </div>
-
-      <div th:each="msg : ${messageList}"
-           class="message-item"
-           th:classappend="${msg.isTop == 1} ? 'is-top' : ''">
-        <div class="message-header">
-          <div class="message-user">
-            <div class="user-avatar" th:text="${#strings.substring(msg.username,0,1)}"></div>
-            <div>
-              <div class="user-name">
-                <span th:text="${msg.username != null ? msg.username : '已注销用户'}"></span>
-                <span th:if="${msg.isTop == 1}" class="top-badge">置顶</span>
-              </div>
-              <div class="message-meta">
-                <span class="message-time" th:text="${msg.createTime}"></span>
-              </div>
+<main class="main">
+    <div class="container">
+        <!-- 轮播图 -->
+        <div class="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="https://images.unsplash.com/photo-1518492104633-130d0cc84637?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80" alt="技术交流">
+                    <div class="carousel-caption">
+                        <h2>技术交流社区</h2>
+                        <p>分享编程经验、硬件知识、机械设计，与同行交流心得，共同成长进步。</p>
+                        <a th:href="@{/message/add}" class="btn btn-primary">立即发布</a>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="https://images.unsplash.com/photo-1504639725590-34d0984388bd?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80" alt="开源分享">
+                    <div class="carousel-caption">
+                        <h2>优质开源分享</h2>
+                        <p>精选开发工具、插件、开源项目推荐，提升开发效率，少走弯路。</p>
+                        <a th:href="@{/index(keyword='开源')}" class="btn btn-outline">查看详情</a>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80" alt="问答互助">
+                    <div class="carousel-caption">
+                        <h2>问答互助专区</h2>
+                        <p>遇到技术难题不用愁，发布求助帖，社区大佬在线答疑解惑。</p>
+                        <a th:href="@{/message/add}" class="btn btn-primary">发布求助</a>
+                    </div>
+                </div>
             </div>
-          </div>
+
+            <button class="carousel-btn prev"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="carousel-btn next"><i class="fa-solid fa-chevron-right"></i></button>
+
+            <div class="carousel-indicators">
+                <span class="indicator active"></span>
+                <span class="indicator"></span>
+                <span class="indicator"></span>
+            </div>
         </div>
-        <div class="message-content" th:text="${msg.content}"></div>
-      </div>
-    </div>
-  </div>
 
-  <!-- 右侧边栏 -->
-  <div class="sidebar">
-    <div class="card user-card" th:if="${session.currentUser != null}">
-      <div class="user-avatar" th:text="${#strings.substring(session.currentUser.username,0,1)}"></div>
-      <div class="nickname" th:text="${session.currentUser.username}"></div>
-      <span class="role-tag" th:classappend="${session.currentUser.role == 1 ? 'admin' : ''}"
-            th:text="${session.currentUser.role == 1 ? '管理员' : '普通用户'}"></span>
-      <div class="stat-row">
-        <div class="stat-item">
-          <div class="num" th:text="${#lists.size(messageList)}">0</div>
-          <div class="label">总留言数</div>
+        <!-- 搜索与分类 -->
+        <form class="search-bar" th:action="@{/index}" method="get">
+            <input type="text" name="keyword" placeholder="搜索留言内容或用户名..." th:value="${keyword}">
+            <button type="submit" class="btn btn-primary btn-sm">搜索</button>
+            <div class="topic-tabs">
+                <a class="topic-tab" th:classappend="${currentTopic == null or currentTopic == ''} ? 'active'"
+                   th:href="@{/index(keyword=${keyword})}">全部</a>
+                <a class="topic-tab" th:classappend="${currentTopic == '日常'} ? 'active'"
+                   th:href="@{/index(keyword=${keyword}, topic='日常')}">日常</a>
+                <a class="topic-tab" th:classappend="${currentTopic == '求助'} ? 'active'"
+                   th:href="@{/index(keyword=${keyword}, topic='求助')}">求助</a>
+                <a class="topic-tab" th:classappend="${currentTopic == '分享'} ? 'active'"
+                   th:href="@{/index(keyword=${keyword}, topic='分享')}">分享</a>
+            </div>
+        </form>
+
+        <!-- 留言列表 -->
+        <div id="messageList">
+            <div class="empty" th:if="${#lists.isEmpty(messageList)}">暂无留言，快来发布第一条吧~</div>
+
+            <div class="message-card"
+                 th:each="msg : ${messageList}"
+                 th:classappend="${msg.isTop == 1} ? 'top-card'">
+                <div class="message-header">
+                    <div class="message-user">
+                        <div class="avatar" th:text="${#strings.substring(msg.username,0,1)}"></div>
+                        <span class="username" th:text="${msg.username}"></span>
+                        <span class="top-tag" th:if="${msg.isTop == 1}">置顶</span>
+                    </div>
+                    <span class="message-time"
+                          th:text="${#temporals.format(msg.createTime, 'yyyy-MM-dd HH:mm')}"></span>
+                </div>
+                <div class="message-content" th:text="${msg.content}"></div>
+                <div class="message-footer">
+                        <span class="reply-btn" th:onclick="'toggleReply(' + ${msg.id} + ')'">
+                            查看回复 (<span th:text="${#lists.size(msg.replyList)}"></span>)
+                        </span>
+                    <span th:if="${msg.topic != null}" th:text="'#' + ${msg.topic}"></span>
+                </div>
+
+                <div class="reply-section" th:id="'reply-' + ${msg.id}">
+                    <div class="reply-item" th:each="reply : ${msg.replyList}">
+                        <span class="reply-user" th:text="${reply.username}"></span>
+                        <span th:text="${reply.content}"></span>
+                        <span class="reply-time"
+                              th:text="${#temporals.format(reply.createTime, 'HH:mm')}"></span>
+                    </div>
+                    <form class="reply-form" th:action="@{/reply/add}" method="post"
+                          th:if="${session.currentUser != null}">
+                        <input type="hidden" name="messageId" th:value="${msg.id}">
+                        <input type="text" name="content" placeholder="写下你的回复..." required>
+                        <button type="submit" class="btn btn-primary btn-sm">回复</button>
+                    </form>
+                    <div class="form-tip" th:if="${session.currentUser == null}">
+                        <a th:href="@{/login}">登录后可发表回复</a>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      <div style="margin-top: 20px;">
-        <a th:href="@{/message/add}" class="btn btn-primary" style="width: 100%; display: block;">发布新留言</a>
-      </div>
     </div>
+</main>
 
-    <div class="card" th:if="${session.currentUser == null}">
-      <div class="card-header">
-        <h3>欢迎来访</h3>
-      </div>
-      <div class="card-body">
-        <p style="font-size: 14px; color: #B0B0B0; margin-bottom: 20px; line-height: 1.7;">
-          登录后即可发布留言，参与讨论，管理自己的内容～
-        </p>
-        <a th:href="@{/login}" class="btn btn-primary" style="width: 100%; display: block; margin-bottom: 12px;">立即登录</a>
-        <a th:href="@{/register}" class="btn btn-default" style="width: 100%; display: block;">注册账号</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <h3>快捷菜单</h3>
-      </div>
-      <div class="quick-menu">
-        <a th:href="@{/index}" class="active">🏠 留言广场</a>
-        <a th:if="${session.currentUser != null}" th:href="@{/message/list}">📝 我的留言</a>
-        <a th:if="${session.currentUser != null and session.currentUser.role == 1}" th:href="@{/admin/user}">⚙️ 管理后台</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <h3>论坛提示</h3>
-      </div>
-      <div class="card-body">
-        <p style="font-size: 13px; color: #B0B0B0; line-height: 1.8;">
-          1. 请文明发言，尊重他人<br>
-          2. 禁止发布违规、广告内容<br>
-          3. 管理员会及时处理违规留言
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script th:src="@{/js/index.js}"></script>
-<script th:src="@{/js/star-bg.js}"></script>
+<script th:src="@{/js/starlight.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/carousel.js}"></script>
 </body>
 </html>

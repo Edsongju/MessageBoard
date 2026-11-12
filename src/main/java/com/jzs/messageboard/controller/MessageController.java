@@ -37,11 +37,23 @@ public class MessageController {
 
     // 提交发布留言（POST）
     @PostMapping("/add")
-    public String add(@RequestParam("content") String content, HttpSession session) {
+    public String add(@RequestParam("content") String content,
+                      @RequestParam(value = "topic", required = false) String topic,
+                      @RequestParam(value = "visibility", defaultValue = "0") Integer visibility,
+                      @RequestParam(value = "visibleUsernames", required = false) String visibleUsernames,
+                      HttpSession session) {
         SysUser user = (SysUser) session.getAttribute("currentUser");
         Message message = new Message();
         message.setUserId(user.getId());
         message.setContent(content);
+        message.setTopic(topic);
+        message.setVisibility(visibility);
+        // 非指定用户模式时清空用户名字段
+        if (visibility != 2) {
+            message.setVisibleUsernames(null);
+        } else {
+            message.setVisibleUsernames(visibleUsernames);
+        }
         message.setStatus(1);
         message.setIsTop(0);
         messageService.insert(message);
@@ -62,11 +74,23 @@ public class MessageController {
 
     // 提交编辑（POST）
     @PostMapping("/edit")
-    public String edit(@RequestParam("id") Long id, @RequestParam("content") String content, HttpSession session) {
+    public String edit(@RequestParam("id") Long id,
+                       @RequestParam("content") String content,
+                       @RequestParam(value = "topic", required = false) String topic,
+                       @RequestParam(value = "visibility", defaultValue = "0") Integer visibility,
+                       @RequestParam(value = "visibleUsernames", required = false) String visibleUsernames,
+                       HttpSession session) {
         SysUser user = (SysUser) session.getAttribute("currentUser");
         Message message = messageService.selectById(id);
         if (message != null && message.getUserId().equals(user.getId())) {
             message.setContent(content);
+            message.setTopic(topic);
+            message.setVisibility(visibility);
+            if (visibility != 2) {
+                message.setVisibleUsernames(null);
+            } else {
+                message.setVisibleUsernames(visibleUsernames);
+            }
             messageService.update(message);
         }
         return "redirect:/message/list";

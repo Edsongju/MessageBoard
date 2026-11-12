@@ -8,7 +8,7 @@
         <result column="user_id" property="userId"/>
         <result column="username" property="username"/>
         <result column="content" property="content"/>
-        <result column="is_top" property="isTop"/> <!-- 新增映射 -->
+        <result column="is_top" property="isTop"/>
         <result column="create_time" property="createTime"/>
     </resultMap>
 
@@ -29,4 +29,81 @@
         WHERE m.status = 1 AND m.user_id = #{userId}
         ORDER BY m.is_top DESC, m.create_time DESC
     </select>
+
+    <!-- 广场联表查询：支持关键词搜索 -->
+    <select id="listAllWithUsername" resultType="com.jzs.messageboard.vo.MessageVO">
+        SELECT
+        m.topic,
+        m.id,
+        m.user_id AS userId,
+        u.username,
+        m.content,
+        m.is_top AS isTop,
+        m.create_time AS createTime
+        FROM message m
+        LEFT JOIN sys_user u ON m.user_id = u.id
+        <where>
+            m.status = 1
+            <if test="keyword != null and keyword != ''">
+                AND (m.content LIKE CONCAT('%', #{keyword}, '%')
+                OR u.username LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+        ORDER BY m.is_top DESC, m.create_time DESC
+    </select>
+    <select id="listAllWithUsername" resultType="com.jzs.messageboard.vo.MessageVO">
+        SELECT
+        m.topic,
+        m.id,
+        m.user_id AS userId,
+        u.username,
+        m.content,
+        m.is_top AS isTop,
+        m.create_time AS createTime,
+        m.visibility,
+        m.visible_usernames AS visibleUsernames
+        FROM message m
+        LEFT JOIN sys_user u ON m.user_id = u.id
+        <where>
+            m.status = 1
+            <if test="keyword != null and keyword != ''">
+                AND (m.content LIKE CONCAT('%', #{keyword}, '%')
+                OR u.username LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+            <!-- 可见性过滤：管理员跳过所有限制 -->
+            <if test="isAdmin == false">
+                AND (
+                -- 1. 公有留言所有人可见
+                m.visibility = 0
+                -- 2. 登录用户可以看自己发布的
+                <if test="currentUserId != null">
+                    OR m.user_id = #{currentUserId}
+                </if>
+                -- 3. 指定用户可见，且当前用户名在列表中
+                <if test="currentUsername != null">
+                    OR (m.visibility = 2 AND FIND_IN_SET(#{currentUsername}, m.visible_usernames))
+                </if>
+                )
+            </if>
+        </where>
+        ORDER BY m.is_top DESC, m.create_time DESC
+    </select>
+
+
+    <!-- 我的留言：按用户ID查询 -->
+    <select id="listByUserId" resultType="com.jzs.messageboard.vo.MessageVO">
+        SELECT
+        m.topic,
+        m.id,
+        m.user_id AS userId,
+        u.username,
+        m.content,
+        m.is_top AS isTop,
+        m.create_time AS createTime
+        FROM message m
+        LEFT JOIN sys_user u ON m.user_id = u.id
+        WHERE m.status = 1 AND m.user_id = #{userId}
+        ORDER BY m.create_time DESC
+    </select>
+
 </mapper>

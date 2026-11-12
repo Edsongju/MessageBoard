@@ -17,4 +17,7 @@ public class Message {
     private Integer isTop;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
+    private String topic;
+    private Integer visibility;
+    private String visibleUsernames;
 }

@@ -1,105 +1,62 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>我的留言 - 个人中心</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的留言 - 留言板</title>
+    <link rel="stylesheet" th:href="@{/css/starlight.css}">
     <link rel="stylesheet" th:href="@{/css/common.css}">
 </head>
 <body>
-<!-- 星空背景 -->
-<canvas id="starBg"></canvas>
-
-<div class="navbar">
-    <div class="nav-container">
-        <div class="nav-logo">💬 留言论坛</div>
+<nav class="navbar">
+    <div class="container">
+        <div class="nav-logo">留言板</div>
         <div class="nav-menu">
-            <a th:href="@{/index}">留言广场</a>
-            <a th:href="@{/message/list}" class="active">个人中心</a>
+            <a th:href="@{/index}">首页广场</a>
+            <a th:href="@{/message/list}" class="active">我的留言</a>
+            <a th:href="@{/admin/user}" th:if="${session.currentUser.role == 1}">后台管理</a>
         </div>
-
-        <div class="nav-user user-dropdown">
-            <div class="user-dropdown-trigger">
-                <div class="user-avatar" th:text="${#strings.substring(session.currentUser.username,0,1)}"></div>
-                <span th:text="${session.currentUser.username}"></span>
-                <span style="font-size:12px; color:#999;">▼</span>
-            </div>
-            <div class="user-dropdown-menu">
-                <a th:href="@{/message/list}" class="active">📝 我的留言</a>
-                <a th:href="@{/message/add}">✏️ 发布留言</a>
-                <a th:if="${session.currentUser.role == 1}" th:href="@{/admin/user}">⚙️ 管理后台</a>
-                <a th:href="@{/logout}" style="color:#FF6B5B;">🚪 退出登录</a>
-            </div>
+        <div class="nav-user-area">
+            <span class="nav-user" th:text="'你好，' + ${session.currentUser.username}"></span>
+            <a th:href="@{/logout}">退出</a>
         </div>
     </div>
-</div>
+</nav>
 
-<div class="container">
-    <div class="main-content">
-        <div class="card">
-            <div class="card-header">
-                <h3>我的留言</h3>
-                <a th:href="@{/message/add}" class="btn btn-primary">发布新留言</a>
-            </div>
+<main class="main">
+    <div class="container">
+        <div class="page-actions">
+            <h1 class="page-title">我的留言</h1>
+            <a th:href="@{/message/add}" class="btn btn-primary btn-sm">发布新留言</a>
+        </div>
 
-            <div th:if="${#lists.isEmpty(list)}" class="empty-tip">
-                你还没有发布过留言，快去发布一条吧～
-            </div>
+        <div id="myMessageList">
+            <div class="empty" th:if="${#lists.isEmpty(list)}">你还没有发布过留言</div>
 
-            <div th:each="msg : ${list}"
-                 class="message-item"
-                 th:classappend="${msg.isTop == 1} ? 'is-top' : ''">
+            <div class="message-card" th:each="item : ${list}">
                 <div class="message-header">
                     <div class="message-user">
-                        <div class="user-avatar" th:text="${#strings.substring(msg.username,0,1)}"></div>
-                        <div>
-                            <div class="user-name">
-                                <span th:text="${msg.username != null ? msg.username : '已注销用户'}"></span>
-                                <span th:if="${msg.isTop == 1}" class="top-badge">置顶</span>
-                            </div>
-                            <div class="message-meta">
-                                <span class="message-time" th:text="${msg.createTime}"></span>
-                            </div>
-                        </div>
+                        <div class="avatar" th:text="${#strings.substring(item.username,0,1)}"></div>
+                        <span class="username" th:text="${item.username}"></span>
+                    </div>
+                    <span class="message-time"
+                          th:text="${#temporals.format(item.createTime, 'yyyy-MM-dd HH:mm')}"></span>
+                </div>
+                <div class="message-content" th:text="${item.content}"></div>
+                <div class="message-footer">
+                    <span th:if="${item.topic != null}" th:text="'分类：' + ${item.topic}"></span>
+                    <div class="message-actions">
+                        <a th:href="@{/message/edit/{id}(id=${item.id})}" class="btn btn-outline btn-sm">编辑</a>
+                        <a th:href="@{/message/delete/{id}(id=${item.id})}"
+                           class="btn btn-danger btn-sm delete-btn">删除</a>
                     </div>
                 </div>
-                <div class="message-content" th:text="${msg.content}"></div>
-                <div class="message-footer">
-                    <a th:href="@{/message/edit/{id}(id=${msg.id})}">✏️ 编辑</a>
-                    <a class="delete-btn" th:href="@{/message/delete/{id}(id=${msg.id})}"
-                       onclick="return confirm('确定删除这条留言吗？')">🗑️ 删除</a>
-                </div>
             </div>
         </div>
     </div>
+</main>
 
-    <div class="sidebar">
-        <div class="card user-card">
-            <div class="user-avatar" th:text="${#strings.substring(session.currentUser.username,0,1)}"></div>
-            <div class="nickname" th:text="${session.currentUser.username}"></div>
-            <span class="role-tag" th:classappend="${session.currentUser.role == 1 ? 'admin' : ''}"
-                  th:text="${session.currentUser.role == 1 ? '管理员' : '普通用户'}"></span>
-            <div class="stat-row">
-                <div class="stat-item">
-                    <div class="num" th:text="${#lists.size(list)}">0</div>
-                    <div class="label">我的留言</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
-                <h3>快捷菜单</h3>
-            </div>
-            <div class="quick-menu">
-                <a th:href="@{/index}">🏠 留言广场</a>
-                <a th:href="@{/message/list}" class="active">📝 我的留言</a>
-                <a th:href="@{/message/add}">✏️ 发布留言</a>
-                <a th:if="${session.currentUser.role == 1}" th:href="@{/admin/user}">⚙️ 管理后台</a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script th:src="@{/js/star-bg.js}"></script>
+<script th:src="@{/js/starlight.js}"></script>
+<script th:src="@{/js/main.js}"></script>
 </body>
 </html>
