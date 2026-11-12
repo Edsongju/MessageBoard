@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>发布留言 - 留言板</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/starlight.css}">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 <nav class="navbar">
@@ -23,7 +25,7 @@
     <div class="container">
         <h1 class="page-title">发布新留言</h1>
 
-        <div class="form-wrapper" style="max-width: 600px; margin: 0 auto;">
+        <div class="form-wrapper" style="max-width: 700px; margin: 0 auto;">
             <form th:action="@{/message/add}" method="post">
                 <div class="form-group">
                     <label>留言分类</label>
@@ -32,25 +34,47 @@
                         <option value="求助">求助</option>
                         <option value="分享">分享</option>
                     </select>
+                </div>
+
+                <div class="form-group">
                     <label>可见范围</label>
-                    <div class="visibility-group">
-                        <label><input type="radio" name="visibility" value="0" checked> 公开（所有人可见）</label>
-                        <label><input type="radio" name="visibility" value="1"> 私有（仅自己可见）</label>
-                        <label><input type="radio" name="visibility" value="2"> 指定用户可见</label>
+                    <div class="radio-group">
+                        <label class="radio-item">
+                            <input type="radio" name="visibility" value="0" checked>
+                            <i class="fa-regular fa-circle radio-icon"></i>
+                            <i class="fa-solid fa-circle-dot radio-icon checked"></i>
+                            <span>公开</span>
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="visibility" value="1">
+                            <i class="fa-regular fa-circle radio-icon"></i>
+                            <i class="fa-solid fa-circle-dot radio-icon checked"></i>
+                            <span>私有</span>
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="visibility" value="2">
+                            <i class="fa-regular fa-circle radio-icon"></i>
+                            <i class="fa-solid fa-circle-dot radio-icon checked"></i>
+                            <span>指定用户</span>
+                        </label>
                     </div>
                     <input type="text" name="visibleUsernames" id="visibleUsernames"
-                           placeholder="输入用户名，多个用英文逗号分隔" style="display:none; margin-top:8px;">
+                           placeholder="输入用户名，多个用英文逗号分隔"
+                           style="display:none; margin-top:8px;">
                 </div>
+
                 <div class="form-group">
                     <label>留言内容</label>
                     <textarea name="content" rows="6" required placeholder="请输入留言内容..."></textarea>
                 </div>
+
                 <button type="submit" class="form-submit">发布留言</button>
             </form>
         </div>
     </div>
 </main>
 
+<script th:src="@{/js/starlight.js}"></script>
 <script th:src="@{/js/main.js}"></script>
 </body>
 </html>

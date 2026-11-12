@@ -6,19 +6,19 @@ function toggleReply(messageId) {
     }
 }
 
-// 删除确认
+// 删除二次确认
 document.addEventListener('DOMContentLoaded', function() {
-    // 所有删除按钮添加二次确认
+    // 删除按钮确认
     const deleteBtns = document.querySelectorAll('.delete-btn');
     deleteBtns.forEach(btn => {
         btn.addEventListener('click', function(e) {
-            if (!confirm('确定执行该删除操作吗？删除后不可恢复。')) {
+            if (!confirm('确定执行删除操作？删除后不可恢复。')) {
                 e.preventDefault();
             }
         });
     });
 
-    // 可见性单选框联动：选指定用户时显示输入框
+    // 可见性单选联动
     const visibilityRadios = document.querySelectorAll('input[name="visibility"]');
     const usernameInput = document.getElementById('visibleUsernames');
 
@@ -32,19 +32,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     usernameInput.value = '';
                 }
             });
-        });
-    }
-
-    // 搜索表单提交
-    const searchForm = document.getElementById('searchForm');
-    if (searchForm) {
-        searchForm.addEventListener('submit', function(e) {
-            const keyword = this.querySelector('input[name="keyword"]').value.trim();
-            if (!keyword) {
-                // 空关键词直接跳转，不带参数
-                e.preventDefault();
-                window.location.href = this.action;
-            }
         });
     }
 });

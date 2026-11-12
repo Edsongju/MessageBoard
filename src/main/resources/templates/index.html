@@ -3,16 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>留言广场 - 留言板</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>留言板 - 首页广场</title>
+    <link rel="stylesheet" th:href="@{/css/starlight.css}">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <!-- 引入 Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-<!-- 顶部导航：从 Session 中读取登录用户 -->
+<!-- 顶部导航 -->
 <nav class="navbar">
     <div class="container">
         <div class="nav-logo">留言板</div>
         <div class="nav-menu">
-            <a th:href="@{/index}">首页广场</a>
+            <a th:href="@{/index}" class="active">首页广场</a>
             <a th:href="@{/message/list}" th:if="${session.currentUser != null}">我的留言</a>
             <a th:href="@{/admin/user}" th:if="${session.currentUser != null and session.currentUser.role == 1}">后台管理</a>
 
@@ -28,8 +31,51 @@
 
 <main class="main">
     <div class="container">
+        <!-- 轮播图 -->
+        <div class="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="https://images.unsplash.com/photo-1518492104633-130d0cc84637?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80" alt="技术交流">
+                    <div class="carousel-caption">
+                        <h2>技术交流社区</h2>
+                        <p>分享编程经验、硬件知识、机械设计，与同行交流心得，共同成长进步。</p>
+                        <a th:href="@{/message/add}" class="btn btn-primary">立即发布</a>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="https://images.unsplash.com/photo-1504639725590-34d0984388bd?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80" alt="开源分享">
+                    <div class="carousel-caption">
+                        <h2>优质开源分享</h2>
+                        <p>精选开发工具、插件、开源项目推荐，提升开发效率，少走弯路。</p>
+                        <a th:href="@{/index(keyword='开源')}" class="btn btn-outline">查看详情</a>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80" alt="问答互助">
+                    <div class="carousel-caption">
+                        <h2>问答互助专区</h2>
+                        <p>遇到技术难题不用愁，发布求助帖，社区大佬在线答疑解惑。</p>
+                        <a th:href="@{/message/add}" class="btn btn-primary">发布求助</a>
+                    </div>
+                </div>
+            </div>
+
+            <button class="carousel-btn prev">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button class="carousel-btn next">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+
+            <div class="carousel-indicators">
+                <span class="indicator active" data-index="0"></span>
+                <span class="indicator" data-index="1"></span>
+                <span class="indicator" data-index="2"></span>
+            </div>
+        </div>
+
         <!-- 搜索与分类筛选 -->
-        <form id="searchForm" class="search-bar" th:action="@{/index}" method="get">
+        <form class="search-bar" th:action="@{/index}" method="get">
             <input type="text" name="keyword" placeholder="搜索留言内容或用户名..."
                    th:value="${keyword}">
             <button type="submit" class="btn btn-primary">搜索</button>
@@ -48,12 +94,10 @@
 
         <!-- 留言列表 -->
         <div id="messageList">
-            <!-- 空状态 -->
             <div class="empty" th:if="${#lists.isEmpty(messageList)}">
                 暂无留言，快来发布第一条吧~
             </div>
 
-            <!-- 循环渲染留言 -->
             <div class="message-card"
                  th:each="msg : ${messageList}"
                  th:classappend="${msg.isTop == 1} ? 'top-card'">
@@ -73,12 +117,10 @@
                         <span class="reply-btn" th:onclick="'toggleReply(' + ${msg.id} + ')'">
                             查看回复 (<span th:text="${#lists.size(msg.replyList)}"></span>)
                         </span>
-                    <span th:if="${msg.topic != null}" class="topic-label" th:text="'#' + ${msg.topic}"></span>
+                    <span th:if="${msg.topic != null}" th:text="'#' + ${msg.topic}"></span>
                 </div>
 
-                <!-- 回复区域 -->
                 <div class="reply-section" th:id="'reply-' + ${msg.id}">
-                    <!-- 回复列表 -->
                     <div class="reply-item" th:each="reply : ${msg.replyList}">
                         <span class="reply-user" th:text="${reply.username}"></span>
                         <span th:text="${reply.content}"></span>
@@ -86,12 +128,11 @@
                               th:text="${#temporals.format(reply.createTime, 'HH:mm')}"></span>
                     </div>
 
-                    <!-- 回复表单：登录后可见 -->
                     <form class="reply-form" th:action="@{/reply/add}" method="post"
                           th:if="${session.currentUser != null}">
                         <input type="hidden" name="messageId" th:value="${msg.id}">
                         <input type="text" name="content" placeholder="写下你的回复..." required>
-                        <button type="submit" class="btn btn-primary">回复</button>
+                        <button type="submit" class="btn btn-primary btn-sm">回复</button>
                     </form>
                     <div class="form-tip" th:if="${session.currentUser == null}">
                         <a th:href="@{/login}">登录后可发表回复</a>
@@ -102,6 +143,9 @@
     </div>
 </main>
 
+<script th:src="@{/js/starlight.js}"></script>
 <script th:src="@{/js/main.js}"></script>
+<!-- 轮播图脚本 -->
+<script th:src="@{/js/carousel.js}"></script>
 </body>
 </html>

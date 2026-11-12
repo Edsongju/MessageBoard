@@ -4,19 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>留言管理 - 后台</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/starlight.css}">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 <nav class="navbar">
     <div class="container">
         <div class="nav-logo">留言板后台</div>
         <div class="nav-menu">
-            <!-- 新增：返回前台首页 -->
             <a th:href="@{/index}">← 返回前台</a>
-            <a th:href="@{/admin/user}"
-               th:classappend="${currentAdminPage == 'user'} ? 'active'">用户管理</a>
-            <a th:href="@{/admin/message}"
-               th:classappend="${currentAdminPage == 'message'} ? 'active'">留言管理</a>
+            <a th:href="@{/admin/user}">用户管理</a>
+            <a th:href="@{/admin/message}" class="active">留言管理</a>
             <span class="nav-user" th:text="'管理员：' + ${session.currentUser.username}"></span>
             <a th:href="@{/logout}">退出</a>
         </div>
@@ -25,10 +24,9 @@
 
 <main class="main">
     <div class="container">
-        <!-- 新增：标题栏返回按钮 -->
         <div class="page-actions">
             <h1 class="page-title">留言管理</h1>
-            <a th:href="@{/index}" class="btn btn-outline">返回首页</a>
+            <a th:href="@{/index}" class="btn btn-outline btn-sm">返回首页</a>
         </div>
 
         <form class="search-bar" th:action="@{/admin/message}" method="get">
@@ -62,10 +60,10 @@
                 <td th:text="${#temporals.format(msg.createTime, 'yyyy-MM-dd HH:mm')}"></td>
                 <td>
                     <a th:href="@{/admin/message/top/{id}(id=${msg.id})}"
-                       class="btn btn-outline"
+                       class="btn btn-outline btn-sm"
                        th:text="${msg.isTop == 1} ? '取消置顶' : '置顶'"></a>
                     <a th:href="@{/admin/message/delete/{id}(id=${msg.id})}"
-                       class="btn btn-danger delete-btn">删除</a>
+                       class="btn btn-danger btn-sm delete-btn">删除</a>
                 </td>
             </tr>
             </tbody>
@@ -73,6 +71,7 @@
     </div>
 </main>
 
+<script th:src="@{/js/starlight.js}"></script>
 <script th:src="@{/js/main.js}"></script>
 </body>
 </html>

@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的留言 - 留言板</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/starlight.css}">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 <nav class="navbar">
@@ -47,9 +49,9 @@
                 <div class="message-footer">
                     <span th:if="${item.topic != null}" th:text="'分类：' + ${item.topic}"></span>
                     <div class="message-actions">
-                        <a th:href="@{/message/edit/{id}(id=${item.id})}" class="btn btn-outline">编辑</a>
+                        <a th:href="@{/message/edit/{id}(id=${item.id})}" class="btn btn-outline btn-sm">编辑</a>
                         <a th:href="@{/message/delete/{id}(id=${item.id})}"
-                           class="btn btn-danger delete-btn">删除</a>
+                           class="btn btn-danger btn-sm delete-btn">删除</a>
                     </div>
                 </div>
             </div>
@@ -57,6 +59,7 @@
     </div>
 </main>
 
+<script th:src="@{/js/starlight.js}"></script>
 <script th:src="@{/js/main.js}"></script>
 </body>
 </html>
