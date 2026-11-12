@@ -6,16 +6,17 @@
     <title>用户管理 - 后台</title>
     <link rel="stylesheet" th:href="@{/css/starlight.css}">
     <link rel="stylesheet" th:href="@{/css/common.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 <nav class="navbar">
     <div class="container">
         <div class="nav-logo">留言板后台</div>
         <div class="nav-menu">
-            <a th:href="@{/index}">← 返回前台</a>
             <a th:href="@{/admin/user}" class="active">用户管理</a>
             <a th:href="@{/admin/message}">留言管理</a>
+        </div>
+        <div class="nav-user-area">
+            <a th:href="@{/index}">← 返回前台</a>
             <span class="nav-user" th:text="'管理员：' + ${session.currentUser.username}"></span>
             <a th:href="@{/logout}">退出</a>
         </div>

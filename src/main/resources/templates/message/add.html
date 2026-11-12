@@ -15,6 +15,8 @@
         <div class="nav-menu">
             <a th:href="@{/index}">首页广场</a>
             <a th:href="@{/message/list}">我的留言</a>
+        </div>
+        <div class="nav-user-area">
             <span class="nav-user" th:text="'你好，' + ${session.currentUser.username}"></span>
             <a th:href="@{/logout}">退出</a>
         </div>
@@ -23,9 +25,8 @@
 
 <main class="main">
     <div class="container">
-        <h1 class="page-title">发布新留言</h1>
-
-        <div class="form-wrapper" style="max-width: 700px; margin: 0 auto;">
+        <div class="form-wrapper wide">
+            <h2>发布新留言</h2>
             <form th:action="@{/message/add}" method="post">
                 <div class="form-group">
                     <label>留言分类</label>

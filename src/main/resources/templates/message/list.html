@@ -6,7 +6,6 @@
     <title>我的留言 - 留言板</title>
     <link rel="stylesheet" th:href="@{/css/starlight.css}">
     <link rel="stylesheet" th:href="@{/css/common.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 <nav class="navbar">
@@ -16,6 +15,8 @@
             <a th:href="@{/index}">首页广场</a>
             <a th:href="@{/message/list}" class="active">我的留言</a>
             <a th:href="@{/admin/user}" th:if="${session.currentUser.role == 1}">后台管理</a>
+        </div>
+        <div class="nav-user-area">
             <span class="nav-user" th:text="'你好，' + ${session.currentUser.username}"></span>
             <a th:href="@{/logout}">退出</a>
         </div>
@@ -26,13 +27,11 @@
     <div class="container">
         <div class="page-actions">
             <h1 class="page-title">我的留言</h1>
-            <a th:href="@{/message/add}" class="btn btn-primary">发布新留言</a>
+            <a th:href="@{/message/add}" class="btn btn-primary btn-sm">发布新留言</a>
         </div>
 
         <div id="myMessageList">
-            <div class="empty" th:if="${#lists.isEmpty(list)}">
-                你还没有发布过留言
-            </div>
+            <div class="empty" th:if="${#lists.isEmpty(list)}">你还没有发布过留言</div>
 
             <div class="message-card" th:each="item : ${list}">
                 <div class="message-header">
@@ -43,9 +42,7 @@
                     <span class="message-time"
                           th:text="${#temporals.format(item.createTime, 'yyyy-MM-dd HH:mm')}"></span>
                 </div>
-
                 <div class="message-content" th:text="${item.content}"></div>
-
                 <div class="message-footer">
                     <span th:if="${item.topic != null}" th:text="'分类：' + ${item.topic}"></span>
                     <div class="message-actions">

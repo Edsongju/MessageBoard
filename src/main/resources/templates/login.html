@@ -6,7 +6,6 @@
   <title>登录 - 留言板</title>
   <link rel="stylesheet" th:href="@{/css/starlight.css}">
   <link rel="stylesheet" th:href="@{/css/common.css}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 <nav class="navbar">
@@ -17,14 +16,13 @@
       <a th:href="@{/login}" class="active">登录</a>
       <a th:href="@{/register}">注册</a>
     </div>
+    <div class="nav-user-area"></div>
   </div>
 </nav>
 
 <main class="main">
   <div class="form-wrapper">
     <h2>用户登录</h2>
-
-    <!-- 错误提示 -->
     <div class="error-msg" th:if="${error}" th:text="${error}"></div>
 
     <form th:action="@{/login}" method="post">

@@ -6,11 +6,9 @@
     <title>留言板 - 首页广场</title>
     <link rel="stylesheet" th:href="@{/css/starlight.css}">
     <link rel="stylesheet" th:href="@{/css/common.css}">
-    <!-- 引入 Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-<!-- 顶部导航 -->
 <nav class="navbar">
     <div class="container">
         <div class="nav-logo">留言板</div>
@@ -18,10 +16,10 @@
             <a th:href="@{/index}" class="active">首页广场</a>
             <a th:href="@{/message/list}" th:if="${session.currentUser != null}">我的留言</a>
             <a th:href="@{/admin/user}" th:if="${session.currentUser != null and session.currentUser.role == 1}">后台管理</a>
-
-            <span class="nav-user" th:if="${session.currentUser != null}"
-                  th:text="'你好，' + ${session.currentUser.username}"></span>
-
+        </div>
+        <div class="nav-user-area">
+                <span class="nav-user" th:if="${session.currentUser != null}"
+                      th:text="'你好，' + ${session.currentUser.username}"></span>
             <a th:href="@{/logout}" th:if="${session.currentUser != null}">退出</a>
             <a th:href="@{/login}" th:if="${session.currentUser == null}">登录</a>
             <a th:href="@{/register}" th:if="${session.currentUser == null}">注册</a>
@@ -60,26 +58,20 @@
                 </div>
             </div>
 
-            <button class="carousel-btn prev">
-                <i class="fa-solid fa-chevron-left"></i>
-            </button>
-            <button class="carousel-btn next">
-                <i class="fa-solid fa-chevron-right"></i>
-            </button>
+            <button class="carousel-btn prev"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="carousel-btn next"><i class="fa-solid fa-chevron-right"></i></button>
 
             <div class="carousel-indicators">
-                <span class="indicator active" data-index="0"></span>
-                <span class="indicator" data-index="1"></span>
-                <span class="indicator" data-index="2"></span>
+                <span class="indicator active"></span>
+                <span class="indicator"></span>
+                <span class="indicator"></span>
             </div>
         </div>
 
-        <!-- 搜索与分类筛选 -->
+        <!-- 搜索与分类 -->
         <form class="search-bar" th:action="@{/index}" method="get">
-            <input type="text" name="keyword" placeholder="搜索留言内容或用户名..."
-                   th:value="${keyword}">
-            <button type="submit" class="btn btn-primary">搜索</button>
-
+            <input type="text" name="keyword" placeholder="搜索留言内容或用户名..." th:value="${keyword}">
+            <button type="submit" class="btn btn-primary btn-sm">搜索</button>
             <div class="topic-tabs">
                 <a class="topic-tab" th:classappend="${currentTopic == null or currentTopic == ''} ? 'active'"
                    th:href="@{/index(keyword=${keyword})}">全部</a>
@@ -94,9 +86,7 @@
 
         <!-- 留言列表 -->
         <div id="messageList">
-            <div class="empty" th:if="${#lists.isEmpty(messageList)}">
-                暂无留言，快来发布第一条吧~
-            </div>
+            <div class="empty" th:if="${#lists.isEmpty(messageList)}">暂无留言，快来发布第一条吧~</div>
 
             <div class="message-card"
                  th:each="msg : ${messageList}"
@@ -110,9 +100,7 @@
                     <span class="message-time"
                           th:text="${#temporals.format(msg.createTime, 'yyyy-MM-dd HH:mm')}"></span>
                 </div>
-
                 <div class="message-content" th:text="${msg.content}"></div>
-
                 <div class="message-footer">
                         <span class="reply-btn" th:onclick="'toggleReply(' + ${msg.id} + ')'">
                             查看回复 (<span th:text="${#lists.size(msg.replyList)}"></span>)
@@ -127,7 +115,6 @@
                         <span class="reply-time"
                               th:text="${#temporals.format(reply.createTime, 'HH:mm')}"></span>
                     </div>
-
                     <form class="reply-form" th:action="@{/reply/add}" method="post"
                           th:if="${session.currentUser != null}">
                         <input type="hidden" name="messageId" th:value="${msg.id}">
@@ -145,7 +132,6 @@
 
 <script th:src="@{/js/starlight.js}"></script>
 <script th:src="@{/js/main.js}"></script>
-<!-- 轮播图脚本 -->
 <script th:src="@{/js/carousel.js}"></script>
 </body>
 </html>

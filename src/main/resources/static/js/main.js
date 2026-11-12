@@ -1,4 +1,4 @@
-// 展开/收起回复区
+// 展开/收起回复
 function toggleReply(messageId) {
     const section = document.getElementById('reply-' + messageId);
     if (section) {
@@ -6,9 +6,8 @@ function toggleReply(messageId) {
     }
 }
 
-// 删除二次确认
 document.addEventListener('DOMContentLoaded', function() {
-    // 删除按钮确认
+    // 删除二次确认
     const deleteBtns = document.querySelectorAll('.delete-btn');
     deleteBtns.forEach(btn => {
         btn.addEventListener('click', function(e) {
