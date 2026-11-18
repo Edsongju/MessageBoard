@@ -23,6 +23,29 @@ spring:
         url-pattern: /*
         exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
 
+  # Redis 连接配置（和 datasource 平级，spring 直接子级）
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password: 123456
+    database: 0
+    timeout: 3000ms
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+        max-wait: -1ms
+
+  # Spring Cache 缓存配置（和 redis 平级）
+  cache:
+    type: redis
+    redis:
+      time-to-live: 1800000
+      cache-null-values: false
+      use-key-prefix: true
+      key-prefix: "msg_board:"
+
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html

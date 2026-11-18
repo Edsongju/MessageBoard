@@ -5,6 +5,8 @@ import com.jzs.messageboard.entity.SysUser;
 import com.jzs.messageboard.mapper.ReplyMapper;
 import com.jzs.messageboard.vo.ReplyVO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -13,23 +15,20 @@ import java.util.List;
 public class ReplyService {
     private final ReplyMapper replyMapper;
 
+    @Cacheable(value = "replyList", key = "#messageId + '_' + #currentUserId + '_' + #currentUsername + '_' + #isAdmin")
     public List<ReplyVO> listByMessageId(Long messageId, Long currentUserId, String currentUsername, boolean isAdmin) {
         return replyMapper.listByMessageId(messageId, currentUserId, currentUsername, isAdmin);
     }
 
+    @CacheEvict(value = {"replyList", "messageList"}, allEntries = true)
     public void add(Reply reply) {
         replyMapper.insert(reply);
     }
 
-    public Reply selectById(Long id) {
-        return replyMapper.selectById(id);
-    }
-
+    @CacheEvict(value = {"replyList", "messageList"}, allEntries = true)
     public boolean deleteById(Long id, SysUser currentUser) {
         Reply reply = replyMapper.selectById(id);
-        if (reply == null) {
-            return false;
-        }
+        if (reply == null) return false;
         if (currentUser.getRole() == 1 || reply.getUserId().equals(currentUser.getId())) {
             replyMapper.deleteById(id);
             return true;
